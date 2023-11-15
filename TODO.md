@@ -1,0 +1,12 @@
+- [x] Implement `abs`
+- [ ] Implement `ceil`
+- [ ] Implement `floor`
+- [ ] Implement `lerp`
+- [ ] Implement `fma`
+- [ ] Implement `min`
+- [ ] Implement `min_component_value`
+- [ ] Implement `max_component_value`
+- [ ] Implement `max_component_index`
+- [ ] Implement `min_component_index`
+- [ ] Implement `permute`
+- [ ] Implement `hprod`
