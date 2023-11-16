@@ -17,7 +17,8 @@
         name = "kodo";
       in
       {
-        defaultPackage = pkgs.stdenv.mkDerivation {
+        # NOTE: THIS CURRENTLY DOES NOT WORK AFTER PROJECT HAS BEEN REFACTORED.
+        defaultPackage = with pkgs; stdenv.mkDerivation {
           inherit name;
           src = self;
           buildInputs = [
@@ -28,14 +29,15 @@
           '';
           installPhase = ''
             mkdir -p $out/bin
-            cp ./target/release/kodo $out/bin
+            cp ./target/release/${name} $out/bin
           '';
         };
 
-        devShells.default = pkgs.mkShell {
+        devShells.default = with pkgs; mkShell {
           buildInputs = [
-            pkgs.rust-analyzer
-            pkgs.rust-bin.stable.latest.default
+            cargo-expand
+            rust-analyzer
+            rust-bin.stable.latest.default
           ];
 
           shellHook = ''
