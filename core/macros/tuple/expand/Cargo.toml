@@ -1,0 +1,15 @@
+[package]
+name = "expand"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[[bin]]
+name = "expand"
+path = "main.rs"
+
+[dependencies]
+tuple_trait = { path = "../../../traits/tuple" }
+tuple_derive = { path = "../" }

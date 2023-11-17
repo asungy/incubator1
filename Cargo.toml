@@ -4,5 +4,9 @@ resolver = "2"
 
 members = [
     "core",
-    "core/macros/tuple"
+]
+
+exclude = [
+    "core/macros/tuple",
+    "core/traits/tuple"
 ]
