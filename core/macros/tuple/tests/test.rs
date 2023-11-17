@@ -13,7 +13,7 @@ mod tuple2 {
     struct Tup2;
 
     #[test]
-    fn hello() {
-        assert_eq!(Tup2::hello(), String::from("Hello, Tup2!"));
+    fn ndim() {
+        assert_eq!(Tup2::ndim(), 2);
     }
 }

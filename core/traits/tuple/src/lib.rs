@@ -1,3 +1,4 @@
 pub trait Tuple2 {
-    fn hello() -> String;
+    /// Returns the number of elements in the vector.
+    fn ndim() -> usize;
 }
