@@ -36,6 +36,18 @@ fn get_generic(ast: &DeriveInput) -> Option<(Ident, Ident)> {
     }
 }
 
+fn get_coords(ast: &DeriveInput) -> Option<(Ident, Ident)> {
+    // Create attribute macro: https://doc.rust-lang.org/beta/book/ch19-06-macros.html#attribute-like-macros
+    // Do something like this:
+    // #[derive(Tuple2)]
+    // #[set_x(x_var = "x")]
+    // pub struct Tuple2Thing<T: Numeric> {
+    //     x: T,
+    //     y: T,
+    // }
+    unimplemented!();
+}
+
 pub fn derive(ast: DeriveInput) -> TokenStream {
     eprintln!("{:#?}", ast);
     let name = &ast.ident;
