@@ -2,6 +2,7 @@
 fn parse() {
     let t = trybuild::TestCases::new();
     t.pass("tests/simple-parse.rs");
+    t.compile_fail("tests/no-generics.rs");
 }
 
 #[cfg(test)]

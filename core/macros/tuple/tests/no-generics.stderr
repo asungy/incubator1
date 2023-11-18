@@ -1,0 +1,7 @@
+error: proc-macro derive panicked
+ --> tests/no-generics.rs:3:10
+  |
+3 | #[derive(Tuple2)]
+  |          ^^^^^^
+  |
+  = help: message: No parameters were found!
