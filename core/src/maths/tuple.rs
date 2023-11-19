@@ -42,8 +42,6 @@ pub trait Tuple<T: Numeric, Rhs = Self, Output = Self>:
     fn abs(&self) -> Self;
     /// Returns the number of elements in the tuple.
     fn ndim() -> usize;
-    /// Computes the dot product between two tuples.
-    fn dot(&self, other: &Self) -> T;
 }
 
 pub mod tuple2 {
@@ -67,10 +65,6 @@ pub mod tuple2 {
     impl<T: Numeric> Tuple<T> for Tuple2<T> {
         fn ndim() -> usize {
             2
-        }
-
-        fn dot(&self, other: &Self) -> T {
-            self.x * other.x + self.y * other.y
         }
 
         fn abs(&self) -> Self {
@@ -285,264 +279,265 @@ pub mod tuple2 {
     }
 
 }
-#[derive(Debug, Clone, Copy)]
-struct Tuple3<T: Numeric> {
-    pub x: T,
-    pub y: T,
-    pub z: T,
-}
 
-impl<T: Numeric> Tuple3<T> {
-    fn new(x: T, y: T, z: T) -> Self {
-        Tuple3 {
-            x,
-            y,
-            z,
+pub mod tuple3 {
+    use super::*;
+
+    #[derive(Debug, Clone, Copy)]
+    pub struct Tuple3<T: Numeric> {
+        pub x: T,
+        pub y: T,
+        pub z: T,
+    }
+
+    impl<T: Numeric> Tuple3<T> {
+        pub fn new(x: T, y: T, z: T) -> Self {
+            Tuple3 {
+                x,
+                y,
+                z,
+            }
         }
     }
-}
 
-impl<T: Numeric> Tuple<T> for Tuple3<T> {
-    fn ndim() -> usize {
-        3
-    }
+    impl<T: Numeric> Tuple<T> for Tuple3<T> {
+        fn ndim() -> usize {
+            3
+        }
 
-    fn dot(&self, other: &Self) -> T {
-        self.x * other.x + self.y * other.y + self.z * other.z
-    }
-
-    fn abs(&self) -> Self {
-        Tuple3 {
-            x: T::abs(self.x),
-            y: T::abs(self.y),
-            z: T::abs(self.z),
+        fn abs(&self) -> Self {
+            Tuple3 {
+                x: T::abs(self.x),
+                y: T::abs(self.y),
+                z: T::abs(self.z),
+            }
         }
     }
-}
 
-struct Tuple3Iter<T: Numeric> {
-    tup: Tuple3<T>,
-    index: usize,
-}
-
-impl<T: Numeric> Iterator for Tuple3Iter<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let result = match self.index {
-            0 => self.tup.x,
-            1 => self.tup.y,
-            2 => self.tup.z,
-            _ => return None,
-        };
-        self.index += 1;
-        Some(result)
-
+    pub struct Tuple3Iter<T: Numeric> {
+        tup: Tuple3<T>,
+        index: usize,
     }
-}
 
-impl<T: Numeric> IntoIterator for Tuple3<T> {
-    type Item = T;
-    type IntoIter = Tuple3Iter<T>;
+    impl<T: Numeric> Iterator for Tuple3Iter<T> {
+        type Item = T;
 
-    fn into_iter(self) -> Self::IntoIter {
-        Tuple3Iter {
-            tup: self,
-            index: 0,
+        fn next(&mut self) -> Option<Self::Item> {
+            let result = match self.index {
+                0 => self.tup.x,
+                1 => self.tup.y,
+                2 => self.tup.z,
+                _ => return None,
+            };
+            self.index += 1;
+            Some(result)
+
         }
     }
-}
 
-impl<T: Numeric> PartialEq for Tuple3<T> {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y && self.z == other.z
-    }
-}
+    impl<T: Numeric> IntoIterator for Tuple3<T> {
+        type Item = T;
+        type IntoIter = Tuple3Iter<T>;
 
-impl<T: Numeric> Add<Self> for Tuple3<T> {
-    type Output = Tuple3<T>;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Tuple3 {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-            z: self.z + rhs.z,
+        fn into_iter(self) -> Self::IntoIter {
+            Tuple3Iter {
+                tup: self,
+                index: 0,
+            }
         }
     }
-}
 
-impl<T: Numeric> Add<T> for Tuple3<T> {
-    type Output = Tuple3<T>;
-
-    fn add(self, rhs: T) -> Self::Output {
-        Tuple3 {
-            x: self.x + rhs,
-            y: self.y + rhs,
-            z: self.z + rhs,
+    impl<T: Numeric> PartialEq for Tuple3<T> {
+        fn eq(&self, other: &Self) -> bool {
+            self.x == other.x && self.y == other.y && self.z == other.z
         }
     }
-}
 
-impl<T: Numeric> AddAssign<Self> for Tuple3<T> {
-    fn add_assign(&mut self, rhs: Self) {
-        self.x += rhs.x;
-        self.y += rhs.y;
-        self.z += rhs.z;
-    }
-}
+    impl<T: Numeric> Add<Self> for Tuple3<T> {
+        type Output = Tuple3<T>;
 
-impl<T: Numeric> AddAssign<T> for Tuple3<T> {
-    fn add_assign(&mut self, rhs: T) {
-        self.x += rhs;
-        self.y += rhs;
-        self.z += rhs;
-    }
-}
-
-impl<T: Numeric> Sub<Self> for Tuple3<T> {
-    type Output = Tuple3<T>;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Tuple3 {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-            z: self.z - rhs.z,
+        fn add(self, rhs: Self) -> Self::Output {
+            Tuple3 {
+                x: self.x + rhs.x,
+                y: self.y + rhs.y,
+                z: self.z + rhs.z,
+            }
         }
     }
-}
 
-impl<T: Numeric> Sub<T> for Tuple3<T> {
-    type Output = Tuple3<T>;
+    impl<T: Numeric> Add<T> for Tuple3<T> {
+        type Output = Tuple3<T>;
 
-    fn sub(self, rhs: T) -> Self::Output {
-        Tuple3 {
-            x: self.x - rhs,
-            y: self.y - rhs,
-            z: self.z - rhs,
+        fn add(self, rhs: T) -> Self::Output {
+            Tuple3 {
+                x: self.x + rhs,
+                y: self.y + rhs,
+                z: self.z + rhs,
+            }
         }
     }
-}
 
-impl<T: Numeric> SubAssign<Self> for Tuple3<T> {
-    fn sub_assign(&mut self, rhs: Self) {
-        self.x -= rhs.x;
-        self.y -= rhs.y;
-        self.z -= rhs.z;
-    }
-}
-
-impl<T: Numeric> SubAssign<T> for Tuple3<T> {
-    fn sub_assign(&mut self, rhs: T) {
-        self.x -= rhs;
-        self.y -= rhs;
-        self.z -= rhs;
-    }
-}
-
-impl<T: Numeric> Mul<Self> for Tuple3<T> {
-    type Output = Tuple3<T>;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        Tuple3 {
-            x: self.x * rhs.x,
-            y: self.y * rhs.y,
-            z: self.z * rhs.z,
+    impl<T: Numeric> AddAssign<Self> for Tuple3<T> {
+        fn add_assign(&mut self, rhs: Self) {
+            self.x += rhs.x;
+            self.y += rhs.y;
+            self.z += rhs.z;
         }
     }
-}
 
-impl<T: Numeric> Mul<T> for Tuple3<T> {
-    type Output = Tuple3<T>;
-
-    fn mul(self, rhs: T) -> Self::Output {
-        Tuple3 {
-            x: self.x * rhs,
-            y: self.y * rhs,
-            z: self.z * rhs,
+    impl<T: Numeric> AddAssign<T> for Tuple3<T> {
+        fn add_assign(&mut self, rhs: T) {
+            self.x += rhs;
+            self.y += rhs;
+            self.z += rhs;
         }
     }
-}
 
-impl<T: Numeric> MulAssign<Self> for Tuple3<T> {
-    fn mul_assign(&mut self, rhs: Self) {
-        self.x *= rhs.x;
-        self.y *= rhs.y;
-        self.z *= rhs.z;
-    }
-}
+    impl<T: Numeric> Sub<Self> for Tuple3<T> {
+        type Output = Tuple3<T>;
 
-impl<T: Numeric> MulAssign<T> for Tuple3<T> {
-    fn mul_assign(&mut self, rhs: T) {
-        self.x *= rhs;
-        self.y *= rhs;
-        self.z *= rhs;
-    }
-}
-
-impl<T: Numeric> Div<Self> for Tuple3<T> {
-    type Output = Tuple3<T>;
-
-    fn div(self, rhs: Self) -> Self::Output {
-        Tuple3 {
-            x: self.x / rhs.x,
-            y: self.y / rhs.y,
-            z: self.z / rhs.z,
+        fn sub(self, rhs: Self) -> Self::Output {
+            Tuple3 {
+                x: self.x - rhs.x,
+                y: self.y - rhs.y,
+                z: self.z - rhs.z,
+            }
         }
     }
-}
 
-impl<T: Numeric> Div<T> for Tuple3<T> {
-    type Output = Tuple3<T>;
+    impl<T: Numeric> Sub<T> for Tuple3<T> {
+        type Output = Tuple3<T>;
 
-    fn div(self, rhs: T) -> Self::Output {
-        Tuple3 {
-            x: self.x / rhs,
-            y: self.y / rhs,
-            z: self.z / rhs,
+        fn sub(self, rhs: T) -> Self::Output {
+            Tuple3 {
+                x: self.x - rhs,
+                y: self.y - rhs,
+                z: self.z - rhs,
+            }
         }
     }
-}
 
-impl<T: Numeric> DivAssign<Self> for Tuple3<T> {
-    fn div_assign(&mut self, rhs: Self) {
-        self.x /= rhs.x;
-        self.y /= rhs.y;
-        self.z /= rhs.z;
-    }
-}
-
-impl<T: Numeric> DivAssign<T> for Tuple3<T> {
-    fn div_assign(&mut self, rhs: T) {
-        self.x /= rhs;
-        self.y /= rhs;
-        self.z /= rhs;
-    }
-}
-
-impl<T: Numeric> Index<usize> for Tuple3<T> {
-    type Output = T;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        match index {
-            0 => &self.x,
-            1 => &self.y,
-            2 => &self.z,
-            _ => panic!("index out of bounds: tuple length is {}, but the index is {}.", Tuple3::<T>::ndim(), index),
+    impl<T: Numeric> SubAssign<Self> for Tuple3<T> {
+        fn sub_assign(&mut self, rhs: Self) {
+            self.x -= rhs.x;
+            self.y -= rhs.y;
+            self.z -= rhs.z;
         }
     }
-}
 
-impl<T: Numeric> IndexMut<usize> for Tuple3<T> {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        match index {
-            0 => &mut self.x,
-            1 => &mut self.y,
-            2 => &mut self.z,
-            _ => panic!("index out of bounds: tuple length is {}, but the index is {}.", Tuple3::<T>::ndim(), index),
+    impl<T: Numeric> SubAssign<T> for Tuple3<T> {
+        fn sub_assign(&mut self, rhs: T) {
+            self.x -= rhs;
+            self.y -= rhs;
+            self.z -= rhs;
         }
     }
-}
 
+    impl<T: Numeric> Mul<Self> for Tuple3<T> {
+        type Output = Tuple3<T>;
+
+        fn mul(self, rhs: Self) -> Self::Output {
+            Tuple3 {
+                x: self.x * rhs.x,
+                y: self.y * rhs.y,
+                z: self.z * rhs.z,
+            }
+        }
+    }
+
+    impl<T: Numeric> Mul<T> for Tuple3<T> {
+        type Output = Tuple3<T>;
+
+        fn mul(self, rhs: T) -> Self::Output {
+            Tuple3 {
+                x: self.x * rhs,
+                y: self.y * rhs,
+                z: self.z * rhs,
+            }
+        }
+    }
+
+    impl<T: Numeric> MulAssign<Self> for Tuple3<T> {
+        fn mul_assign(&mut self, rhs: Self) {
+            self.x *= rhs.x;
+            self.y *= rhs.y;
+            self.z *= rhs.z;
+        }
+    }
+
+    impl<T: Numeric> MulAssign<T> for Tuple3<T> {
+        fn mul_assign(&mut self, rhs: T) {
+            self.x *= rhs;
+            self.y *= rhs;
+            self.z *= rhs;
+        }
+    }
+
+    impl<T: Numeric> Div<Self> for Tuple3<T> {
+        type Output = Tuple3<T>;
+
+        fn div(self, rhs: Self) -> Self::Output {
+            Tuple3 {
+                x: self.x / rhs.x,
+                y: self.y / rhs.y,
+                z: self.z / rhs.z,
+            }
+        }
+    }
+
+    impl<T: Numeric> Div<T> for Tuple3<T> {
+        type Output = Tuple3<T>;
+
+        fn div(self, rhs: T) -> Self::Output {
+            Tuple3 {
+                x: self.x / rhs,
+                y: self.y / rhs,
+                z: self.z / rhs,
+            }
+        }
+    }
+
+    impl<T: Numeric> DivAssign<Self> for Tuple3<T> {
+        fn div_assign(&mut self, rhs: Self) {
+            self.x /= rhs.x;
+            self.y /= rhs.y;
+            self.z /= rhs.z;
+        }
+    }
+
+    impl<T: Numeric> DivAssign<T> for Tuple3<T> {
+        fn div_assign(&mut self, rhs: T) {
+            self.x /= rhs;
+            self.y /= rhs;
+            self.z /= rhs;
+        }
+    }
+
+    impl<T: Numeric> Index<usize> for Tuple3<T> {
+        type Output = T;
+
+        fn index(&self, index: usize) -> &Self::Output {
+            match index {
+                0 => &self.x,
+                1 => &self.y,
+                2 => &self.z,
+                _ => panic!("index out of bounds: tuple length is {}, but the index is {}.", Tuple3::<T>::ndim(), index),
+            }
+        }
+    }
+
+    impl<T: Numeric> IndexMut<usize> for Tuple3<T> {
+        fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+            match index {
+                0 => &mut self.x,
+                1 => &mut self.y,
+                2 => &mut self.z,
+                _ => panic!("index out of bounds: tuple length is {}, but the index is {}.", Tuple3::<T>::ndim(), index),
+            }
+        }
+    }
+
+}
 
 #[cfg(test)]
 mod tuple2_tests {
@@ -560,13 +555,6 @@ mod tuple2_tests {
     #[test]
     fn ndim() {
         assert!(Tuple2i32::ndim() == 2);
-    }
-
-    #[test]
-    fn dot() {
-        let tup_a = Tuple2i32::new(1, 2);
-        let tup_b = Tuple2i32::new(3, 4);
-        assert_eq!(tup_a.dot(&tup_b), 11);
     }
 
     #[test]
@@ -724,7 +712,7 @@ mod tuple2_tests {
 
 #[cfg(test)]
 mod tuple3_tests {
-    use super::{ Tuple, Tuple3 };
+    use super::{ Tuple, tuple3::Tuple3 };
     type Tuple3i32 = Tuple3<i32>;
 
     #[test]
@@ -738,13 +726,6 @@ mod tuple3_tests {
     #[test]
     fn ndim() {
         assert_eq!(Tuple3i32::ndim(), 3);
-    }
-
-    #[test]
-    fn dot() {
-        let tup_a = Tuple3i32::new(1, 2, 3);
-        let tup_b = Tuple3i32::new(4, 5, 6);
-        assert_eq!(tup_a.dot(&tup_b), 32);
     }
 
     #[test]

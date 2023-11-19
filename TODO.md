@@ -10,3 +10,5 @@
 - [ ] Implement `min_component_index`
 - [ ] Implement `permute`
 - [ ] Implement `hprod`
+- [ ] Implement `ToString`
+- [ ] Implement `tup!` macro
