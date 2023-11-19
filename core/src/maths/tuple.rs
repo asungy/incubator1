@@ -42,6 +42,8 @@ pub trait Tuple<T: Numeric, Rhs = Self, Output = Self>:
     fn abs(&self) -> Self;
     /// Returns a tuple where each of the components are rounded up.
     fn ceil(&self) -> Self;
+    /// Returns a tuple where each of the components are rounded down.
+    fn floor(&self) -> Self;
     /// Returns the number of elements in the tuple.
     fn ndim() -> usize;
 }
@@ -80,6 +82,13 @@ pub mod tuple2 {
             Tuple2 {
                 x: T::ceil(self.x),
                 y: T::ceil(self.y),
+            }
+        }
+
+        fn floor(&self) -> Self {
+            Tuple2 {
+                x: T::floor(self.x),
+                y: T::floor(self.y),
             }
         }
     }
@@ -327,6 +336,14 @@ pub mod tuple3 {
                 x: T::ceil(self.x),
                 y: T::ceil(self.y),
                 z: T::ceil(self.z),
+            }
+        }
+
+        fn floor(&self) -> Self {
+            Tuple3 {
+                x: T::floor(self.x),
+                y: T::floor(self.y),
+                z: T::floor(self.z),
             }
         }
     }
@@ -730,6 +747,12 @@ mod tuple2_tests {
         let tup = Tuple2::<f32>::new(3.14, 15.92);
         assert_eq!(tup.ceil(), Tuple2::<f32>::new(4.0, 16.0));
     }
+
+    #[test]
+    fn floor() {
+        let tup = Tuple2::<f32>::new(3.14, 15.92);
+        assert_eq!(tup.floor(), Tuple2::<f32>::new(3.0, 15.0));
+    }
 }
 
 
@@ -904,5 +927,11 @@ mod tuple3_tests {
     fn ceil() {
         let tup = Tuple3::<f64>::new(12.51, 89.5, 16.0);
         assert_eq!(tup.ceil(), Tuple3::<f64>::new(13.0, 90.0, 16.0));
+    }
+
+    #[test]
+    fn floor() {
+        let tup = Tuple3::<f64>::new(12.51, 89.5, 16.0);
+        assert_eq!(tup.floor(), Tuple3::<f64>::new(12.0, 89.0, 16.0));
     }
 }

@@ -11,6 +11,7 @@ use std::ops::{
 use super::{
     abs::Abs,
     ceil::Ceil,
+    floor::Floor,
 };
 
 pub trait Numeric<Rhs = Self, Output = Self>:
@@ -21,6 +22,7 @@ pub trait Numeric<Rhs = Self, Output = Self>:
     + Copy
     + Div<Rhs, Output = Output>
     + DivAssign<Rhs>
+    + Floor<Item = Self>
     + Mul<Rhs, Output = Output>
     + MulAssign<Rhs>
     + PartialEq
@@ -36,6 +38,7 @@ impl<T, Rhs, Output> Numeric<Rhs, Output> for T where T:
     + Copy
     + Div<Rhs, Output = Output>
     + DivAssign<Rhs>
+    + Floor<Item = Self>
     + Mul<Rhs, Output = Output>
     + MulAssign<Rhs>
     + PartialEq
