@@ -1,3 +1,2 @@
-pub mod vector;
-mod numeric;
+pub mod tuple;
 mod traits;

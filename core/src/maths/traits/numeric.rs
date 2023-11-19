@@ -8,7 +8,7 @@ use std::ops::{
     Sub,
     SubAssign,
 };
-use super::traits::abs::Abs;
+use super::abs::Abs;
 
 pub trait Numeric<Rhs = Self, Output = Self>:
     Abs<Item = Self>
