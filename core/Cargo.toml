@@ -2,7 +2,3 @@
 name = "kodo-core"
 version = "0.1.0"
 edition = "2021"
-
-[dependencies]
-tuple_derive = { path = "./macros/tuple" }
-tuple_trait = { path = "./traits/tuple" }
