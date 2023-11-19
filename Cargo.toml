@@ -1,12 +1,5 @@
 [workspace]
-
 resolver = "2"
-
 members = [
     "core",
-]
-
-exclude = [
-    "core/macros/tuple",
-    "core/traits/tuple"
 ]
