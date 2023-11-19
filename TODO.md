@@ -1,5 +1,5 @@
 - [x] Implement `abs`
-- [ ] Implement `ceil`
+- [x] Implement `ceil`
 - [ ] Implement `floor`
 - [ ] Implement `lerp`
 - [ ] Implement `fma`

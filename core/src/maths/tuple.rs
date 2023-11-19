@@ -40,6 +40,8 @@ pub trait Tuple<T: Numeric, Rhs = Self, Output = Self>:
     /// Returns a tuple where each of the components are of their respective absolute
     /// values.
     fn abs(&self) -> Self;
+    /// Returns a tuple where each of the components are rounded up.
+    fn ceil(&self) -> Self;
     /// Returns the number of elements in the tuple.
     fn ndim() -> usize;
 }
@@ -71,6 +73,13 @@ pub mod tuple2 {
             Tuple2 {
                 x: T::abs(self.x),
                 y: T::abs(self.y),
+            }
+        }
+
+        fn ceil(&self) -> Self {
+            Tuple2 {
+                x: T::ceil(self.x),
+                y: T::ceil(self.y),
             }
         }
     }
@@ -310,6 +319,14 @@ pub mod tuple3 {
                 x: T::abs(self.x),
                 y: T::abs(self.y),
                 z: T::abs(self.z),
+            }
+        }
+
+        fn ceil(&self) -> Self {
+            Tuple3 {
+                x: T::ceil(self.x),
+                y: T::ceil(self.y),
+                z: T::ceil(self.z),
             }
         }
     }
@@ -707,6 +724,12 @@ mod tuple2_tests {
         let tup = Tuple2i32::new(32, -84);
         assert_eq!(tup.abs(), Tuple2i32::new(32, 84));
     }
+
+    #[test]
+    fn ceil() {
+        let tup = Tuple2::<f32>::new(3.14, 15.92);
+        assert_eq!(tup.ceil(), Tuple2::<f32>::new(4.0, 16.0));
+    }
 }
 
 
@@ -875,5 +898,11 @@ mod tuple3_tests {
     fn abs() {
         let tup = Tuple3i32::new(32, -84, -121);
         assert_eq!(tup.abs(), Tuple3i32::new(32, 84, 121));
+    }
+
+    #[test]
+    fn ceil() {
+        let tup = Tuple3::<f64>::new(12.51, 89.5, 16.0);
+        assert_eq!(tup.ceil(), Tuple3::<f64>::new(13.0, 90.0, 16.0));
     }
 }
