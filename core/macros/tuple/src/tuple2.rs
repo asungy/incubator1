@@ -7,6 +7,24 @@ use syn::{
     TypeParamBound,
 };
 
+struct Context {
+    // struct name
+    name: Ident,
+    // x-coordinate identifier
+    x: Ident,
+    // y-coordinate identifier
+    y: Ident,
+    // generic trait identifier (associated with Numeric trait)
+    genid: Ident,
+    // Numeric trait identifier
+    numeric: Ident,
+}
+
+impl Context {
+    fn get_name(ast: &DeriveInput) {
+
+    }
+}
 
 fn get_generic(ast: &DeriveInput) -> Option<(Ident, Ident)> {
     let mut param_ident: Option<Ident> = None;

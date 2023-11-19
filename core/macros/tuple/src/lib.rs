@@ -8,3 +8,8 @@ pub fn derive_tuple2(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
     tuple2::derive(ast)
 }
+
+#[proc_macro_attribute]
+pub fn coordinates(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}
