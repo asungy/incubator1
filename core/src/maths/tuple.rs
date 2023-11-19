@@ -44,6 +44,9 @@ pub trait Tuple<T: Numeric, Rhs = Self, Output = Self>:
     fn ceil(&self) -> Self;
     /// Returns a tuple where each of the components are rounded down.
     fn floor(&self) -> Self;
+    /// Returns the linear interpolation given between two tuples, provided `t` 
+    /// (which is a ratio). See: https://en.wikipedia.org/wiki/Linear_interpolation
+    fn lerp(t0: &Self, t1: &Self, t: T) -> T;
     /// Returns the number of elements in the tuple.
     fn ndim() -> usize;
 }
@@ -90,6 +93,10 @@ pub mod tuple2 {
                 x: T::floor(self.x),
                 y: T::floor(self.y),
             }
+        }
+
+        fn lerp(t0: &Self, t1: &Self, t: T) -> T {
+            (1 - t) * t0 + t * t1
         }
     }
 
@@ -345,6 +352,10 @@ pub mod tuple3 {
                 y: T::floor(self.y),
                 z: T::floor(self.z),
             }
+        }
+
+        fn lerp(t0: &Self, t1: &Self, t: T) -> T {
+            (1 - t) * t0 + t * t1
         }
     }
 
