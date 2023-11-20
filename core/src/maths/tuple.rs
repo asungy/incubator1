@@ -302,7 +302,6 @@ pub mod tuple2 {
             }
         }
     }
-
 }
 
 pub mod tuple3 {
@@ -584,148 +583,157 @@ pub mod tuple3 {
 
 }
 
+#[macro_export]
+macro_rules! tup {
+    ($x:expr, $y:expr) => {
+        $crate::maths::tuple::tuple2::Tuple2::new($x, $y)
+    };
+    ($x:expr, $y:expr, $z:expr) => {
+        $crate::maths::tuple::tuple3::Tuple3::new($x, $y, $z)
+    };
+}
+
 #[cfg(test)]
 mod tuple2_tests {
     use super::{ Tuple, tuple2::Tuple2 };
-    type Tuple2i32 = Tuple2<i32>;
-
+    use crate::tup;
 
     #[test]
     fn new() {
-        let tup = Tuple2i32::new(42, 16);
+        let tup = tup!(42, 16);
         assert!(tup.x == 42);
         assert!(tup.y == 16);
     }
 
     #[test]
     fn ndim() {
-        assert!(Tuple2i32::ndim() == 2);
+        assert!(Tuple2::<i32>::ndim() == 2);
     }
 
     #[test]
     fn eq() {
-        let tup_a = Tuple2i32::new(10, 20);
+        let tup_a = tup!(10, 20);
         let tup_b = tup_a.clone();
         assert_eq!(tup_a, tup_b);
 
-        let tup_c = Tuple2i32::new(1, 2);
-        let tup_d = Tuple2i32::new(3, 4);
+        let tup_c = tup!(1, 2);
+        let tup_d = tup!(3, 4);
         assert_ne!(tup_c, tup_d);
     }
 
     #[test]
     fn add_tup() {
-        let tup_a = Tuple2i32::new(10, 20);
-        let tup_b = Tuple2i32::new(30, 40);
-        let expected = Tuple2i32::new(40, 60);
+        let tup_a = tup!(10, 20);
+        let tup_b = tup!(30, 40);
+        let expected = tup!(40, 60);
         assert_eq!(tup_a + tup_b, expected);
     }
 
     #[test]
     fn add_t() {
-        let tup = Tuple2i32::new(10, 20);
-        assert_eq!(tup + 5, Tuple2i32::new(15, 25));
+        let tup = tup!(10, 20);
+        assert_eq!(tup + 5, tup!(15, 25));
     }
 
     #[test]
     fn add_assign_tup() {
-        let mut tup = Tuple2i32::new(1, 2);
-        tup += Tuple2i32::new(3, 4);
-        assert_eq!(tup, Tuple2i32::new(4, 6));
+        let mut tup = tup!(1, 2);
+        tup += tup!(3, 4);
+        assert_eq!(tup, tup!(4, 6));
     }
 
     #[test]
     fn add_assign_t() {
-        let mut tup = Tuple2i32::new(1, 2);
+        let mut tup = tup!(1, 2);
         tup += 5;
-        assert_eq!(tup, Tuple2i32::new(6, 7));
+        assert_eq!(tup, tup!(6, 7));
     }
 
     #[test]
     fn sub_tup() {
-        let tup_a = Tuple2i32::new(50, 25);
-        let tup_b = Tuple2i32::new(25, 12);
-        let expected = Tuple2i32::new(25, 13);
+        let tup_a = tup!(50, 25);
+        let tup_b = tup!(25, 12);
+        let expected = tup!(25, 13);
         assert_eq!(tup_a - tup_b, expected);
     }
 
     #[test]
     fn sub_t() {
-        let tup = Tuple2i32::new(10, 20);
-        assert_eq!(tup - 5, Tuple2i32::new(5, 15));
+        let tup = tup!(10, 20);
+        assert_eq!(tup - 5, tup!(5, 15));
     }
 
     #[test]
     fn sub_assign_tup() {
-        let mut tup = Tuple2i32::new(50, 25);
-        tup -= Tuple2i32::new(25, 12);
-        assert_eq!(tup, Tuple2i32::new(25, 13));
+        let mut tup = tup!(50, 25);
+        tup -= tup!(25, 12);
+        assert_eq!(tup, tup!(25, 13));
     }
 
     #[test]
     fn sub_assign_t() {
-        let mut tup = Tuple2i32::new(10, 20);
+        let mut tup = tup!(10, 20);
         tup -= 5;
-        assert_eq!(tup, Tuple2i32::new(5, 15));
+        assert_eq!(tup, tup!(5, 15));
     }
 
     #[test]
     fn mul_tup() {
-        let tup_a = Tuple2i32::new(1, 2);
-        let tup_b = Tuple2i32::new(3, 4);
-        assert_eq!(tup_a * tup_b, Tuple2i32::new(3, 8));
+        let tup_a = tup!(1, 2);
+        let tup_b = tup!(3, 4);
+        assert_eq!(tup_a * tup_b, tup!(3, 8));
     }
 
     #[test]
     fn mul_t() {
-        let tup = Tuple2i32::new(1, 2);
-        assert_eq!(tup * 5, Tuple2i32::new(5, 10));
+        let tup = tup!(1, 2);
+        assert_eq!(tup * 5, tup!(5, 10));
     }
 
     #[test]
     fn mul_assign_tup() {
-        let mut tup = Tuple2i32::new(1, 2);
-        tup *= Tuple2i32::new(3, 4);
-        assert_eq!(tup, Tuple2i32::new(3, 8));
+        let mut tup = tup!(1, 2);
+        tup *= tup!(3, 4);
+        assert_eq!(tup, tup!(3, 8));
     }
 
     #[test]
     fn mul_assign_t() {
-        let mut tup = Tuple2i32::new(1, 2);
+        let mut tup = tup!(1, 2);
         tup *= 5;
-        assert_eq!(tup, Tuple2i32::new(5, 10));
+        assert_eq!(tup, tup!(5, 10));
     }
 
     #[test]
     fn div_tup() {
-        let tup_a = Tuple2i32::new(24, 12);
-        let tup_b = Tuple2i32::new(2, 4);
-        assert_eq!(tup_a / tup_b, Tuple2i32::new(12, 3));
+        let tup_a = tup!(24, 12);
+        let tup_b = tup!(2, 4);
+        assert_eq!(tup_a / tup_b, tup!(12, 3));
     }
 
     #[test]
     fn div_t() {
-        let tup = Tuple2i32::new(10, 20);
-        assert_eq!(tup / 5, Tuple2i32::new(2, 4))
+        let tup = tup!(10, 20);
+        assert_eq!(tup / 5, tup!(2, 4))
     }
 
     #[test]
     fn div_assign_tup() {
-        let mut tup = Tuple2i32::new(24, 12);
-        tup /= Tuple2i32::new(2, 4);
-        assert_eq!(tup, Tuple2i32::new(12, 3));
+        let mut tup = tup!(24, 12);
+        tup /= tup!(2, 4);
+        assert_eq!(tup, tup!(12, 3));
     }
 
     #[test]
     fn div_assign_t() {
-        let mut tup = Tuple2i32::new(24, 12);
+        let mut tup = tup!(24, 12);
         tup /= 2;
-        assert_eq!(tup, Tuple2i32::new(12, 6));
+        assert_eq!(tup, tup!(12, 6));
     }
 
     #[test]
     fn index() {
-        let mut tup = Tuple2i32::new(1, 2);
+        let mut tup = tup!(1, 2);
         tup[0] = 3;
         tup[1] = 4;
         assert_eq!(tup[0], 3);
@@ -735,13 +743,13 @@ mod tuple2_tests {
     #[test]
     #[should_panic]
     fn index_panic() {
-        let tup = Tuple2i32::new(1, 2);
+        let tup = tup!(1, 2);
         tup[2];
     }
 
     #[test]
     fn iter() {
-        let mut iter = Tuple2i32::new(1, 2).into_iter();
+        let mut iter = tup!(1, 2).into_iter();
         assert_eq!(iter.next(), Some(1));
         assert_eq!(iter.next(), Some(2));
         assert_eq!(iter.next(), None);
@@ -749,8 +757,8 @@ mod tuple2_tests {
 
     #[test]
     fn abs() {
-        let tup = Tuple2i32::new(32, -84);
-        assert_eq!(tup.abs(), Tuple2i32::new(32, 84));
+        let tup = tup!(32, -84);
+        assert_eq!(tup.abs(), tup!(32, 84));
     }
 
     #[test]
@@ -770,11 +778,10 @@ mod tuple2_tests {
 #[cfg(test)]
 mod tuple3_tests {
     use super::{ Tuple, tuple3::Tuple3 };
-    type Tuple3i32 = Tuple3<i32>;
 
     #[test]
     fn new() {
-        let tup = Tuple3i32::new(13, 51, 79);
+        let tup = tup!(13, 51, 79);
         assert_eq!(tup.x, 13);
         assert_eq!(tup.y, 51);
         assert_eq!(tup.z, 79);
@@ -782,128 +789,128 @@ mod tuple3_tests {
 
     #[test]
     fn ndim() {
-        assert_eq!(Tuple3i32::ndim(), 3);
+        assert_eq!(Tuple3::<i32>::ndim(), 3);
     }
 
     #[test]
     fn eq() {
-        let tup = Tuple3i32::new(13, 51, 79);
-        assert_eq!(tup, Tuple3i32::new(13, 51, 79));
-        assert_ne!(tup, Tuple3i32::new(13, 51, 80))
+        let tup = tup!(13, 51, 79);
+        assert_eq!(tup, tup!(13, 51, 79));
+        assert_ne!(tup, tup!(13, 51, 80))
     }
 
     #[test]
     fn add_tup() {
-        let tup_a = Tuple3i32::new(1, 2, 3);
-        let tup_b = Tuple3i32::new(4, 5, 6);
-        assert_eq!(tup_a + tup_b, Tuple3i32::new(5, 7, 9));
+        let tup_a = tup!(1, 2, 3);
+        let tup_b = tup!(4, 5, 6);
+        assert_eq!(tup_a + tup_b, tup!(5, 7, 9));
     }
 
     #[test]
     fn add_t() {
-        let tup = Tuple3i32::new(1, 2, 3);
-        assert_eq!(tup + 5, Tuple3i32::new(6, 7, 8));
+        let tup = tup!(1, 2, 3);
+        assert_eq!(tup + 5, tup!(6, 7, 8));
     }
 
     #[test]
     fn add_assign_tup() {
-        let mut tup = Tuple3i32::new(1, 2, 3);
-        tup += Tuple3i32::new(4, 5, 6);
-        assert_eq!(tup, Tuple3i32::new(5, 7, 9));
+        let mut tup = tup!(1, 2, 3);
+        tup += tup!(4, 5, 6);
+        assert_eq!(tup, tup!(5, 7, 9));
     }
 
     #[test]
     fn add_assign_t() {
-        let mut tup = Tuple3i32::new(1, 2, 3);
+        let mut tup = tup!(1, 2, 3);
         tup += 5;
-        assert_eq!(tup, Tuple3i32::new(6, 7, 8));
+        assert_eq!(tup, tup!(6, 7, 8));
     }
 
     #[test]
     fn sub_tup() {
-        let tup_a = Tuple3i32::new(10, 20, 30);
-        let tup_b = Tuple3i32::new(4, 5, 6);
-        let expected = Tuple3i32::new(6, 15, 24);
+        let tup_a = tup!(10, 20, 30);
+        let tup_b = tup!(4, 5, 6);
+        let expected = tup!(6, 15, 24);
         assert_eq!(tup_a - tup_b, expected);
     }
 
     #[test]
     fn sub_t() {
-        let tup = Tuple3i32::new(10, 20, 30);
-        assert_eq!(tup - 5, Tuple3i32::new(5, 15, 25));
+        let tup = tup!(10, 20, 30);
+        assert_eq!(tup - 5, tup!(5, 15, 25));
     }
 
     #[test]
     fn sub_assign_tup() {
-        let mut tup = Tuple3i32::new(10, 20, 30);
-        tup -= Tuple3i32::new(4, 5, 6);
-        assert_eq!(tup, Tuple3i32::new(6, 15, 24));
+        let mut tup = tup!(10, 20, 30);
+        tup -= tup!(4, 5, 6);
+        assert_eq!(tup, tup!(6, 15, 24));
     }
 
     #[test]
     fn sub_assign_t() {
-        let mut tup = Tuple3i32::new(10, 20, 30);
+        let mut tup = tup!(10, 20, 30);
         tup -= 5;
-        assert_eq!(tup, Tuple3i32::new(5, 15, 25));
+        assert_eq!(tup, tup!(5, 15, 25));
     }
 
     #[test]
     fn mul_tup() {
-        let tup_a = Tuple3i32::new(1, 2, 3);
-        let tup_b = Tuple3i32::new(4, 5, 6);
-        assert_eq!(tup_a * tup_b, Tuple3i32::new(4, 10, 18));
+        let tup_a = tup!(1, 2, 3);
+        let tup_b = tup!(4, 5, 6);
+        assert_eq!(tup_a * tup_b, tup!(4, 10, 18));
     }
 
     #[test]
     fn mul_t() {
-        let tup = Tuple3i32::new(1, 2, 3);
-        assert_eq!(tup * 5, Tuple3i32::new(5, 10, 15));
+        let tup = tup!(1, 2, 3);
+        assert_eq!(tup * 5, tup!(5, 10, 15));
     }
 
     #[test]
     fn mul_assign_tup() {
-        let mut tup = Tuple3i32::new(1, 2, 3);
-        tup *= Tuple3i32::new(4, 5, 6);
-        assert_eq!(tup, Tuple3i32::new(4, 10, 18));
+        let mut tup = tup!(1, 2, 3);
+        tup *= tup!(4, 5, 6);
+        assert_eq!(tup, tup!(4, 10, 18));
     }
 
     #[test]
     fn mul_assign_t() {
-        let mut tup = Tuple3i32::new(1, 2, 3);
+        let mut tup = tup!(1, 2, 3);
         tup *= 5;
-        assert_eq!(tup, Tuple3i32::new(5, 10, 15));
+        assert_eq!(tup, tup!(5, 10, 15));
     }
 
     #[test]
     fn div_tup() {
-        let tup_a = Tuple3i32::new(12, 24, 36);
-        let tup_b = Tuple3i32::new(3, 4, 9);
-        assert_eq!(tup_a / tup_b, Tuple3i32::new(4, 6, 4))
+        let tup_a = tup!(12, 24, 36);
+        let tup_b = tup!(3, 4, 9);
+        assert_eq!(tup_a / tup_b, tup!(4, 6, 4))
     }
 
     #[test]
     fn div_t() {
-        let tup = Tuple3i32::new(12, 24, 36);
-        assert_eq!(tup / 3, Tuple3i32::new(4, 8, 12));
+        let tup = tup!(12, 24, 36);
+        assert_eq!(tup / 3, tup!(4, 8, 12));
     }
 
     #[test]
     fn div_assign_tup() {
-        let mut tup = Tuple3i32::new(12, 24, 36);
-        tup /= Tuple3i32::new(3, 4, 18);
-        assert_eq!(tup, Tuple3i32::new(4, 6, 2));
+        let mut tup = tup!(12, 24, 36);
+        tup /= tup!(3, 4, 18);
+        assert_eq!(tup, tup!(4, 6, 2));
     }
 
     #[test]
     fn div_assign_t() {
-        let mut tup = Tuple3i32::new(12, 24, 36);
+        let mut tup = tup!(12, 24, 36);
         tup /= 3;
-        assert_eq!(tup, Tuple3i32::new(4, 8, 12));
+        assert_eq!(tup, tup!(4, 8, 12));
     }
 
     #[test]
     fn index() {
-        let mut tup = Tuple3i32::new(1, 2, 3);
+        let mut tup = tup!(1, 2, 3);
         tup[0] = 4;
         tup[1] = 5;
         tup[2] = 6;
@@ -915,13 +922,13 @@ mod tuple3_tests {
     #[test]
     #[should_panic]
     fn index_panic() {
-        let tup = Tuple3i32::new(1, 2, 3);
+        let tup = tup!(1, 2, 3);
         tup[3];
     }
 
     #[test]
     fn iter() {
-        let mut iter = Tuple3i32::new(1, 2, 3).into_iter();
+        let mut iter = tup!(1, 2, 3).into_iter();
         assert_eq!(iter.next(), Some(1));
         assert_eq!(iter.next(), Some(2));
         assert_eq!(iter.next(), Some(3));
@@ -930,8 +937,8 @@ mod tuple3_tests {
 
     #[test]
     fn abs() {
-        let tup = Tuple3i32::new(32, -84, -121);
-        assert_eq!(tup.abs(), Tuple3i32::new(32, 84, 121));
+        let tup = tup!(32, -84, -121);
+        assert_eq!(tup.abs(), tup!(32, 84, 121));
     }
 
     #[test]

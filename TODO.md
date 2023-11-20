@@ -14,5 +14,5 @@
 - [ ] Implement `hprod`
 - [ ] Implement `ToString`
 
-- [ ] Implement `tup!` macro
+- [x] Implement `tup!` macro
 - [ ] Implement macro to create traits (example: https://docs.rs/num-traits/latest/src/num_traits/identities.rs.html#133)
