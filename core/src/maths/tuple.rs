@@ -96,7 +96,7 @@ pub mod tuple2 {
         }
 
         fn lerp(t0: &Self, t1: &Self, t: T) -> T {
-            (1 - t) * t0 + t * t1
+            todo!()
         }
     }
 
@@ -355,7 +355,7 @@ pub mod tuple3 {
         }
 
         fn lerp(t0: &Self, t1: &Self, t: T) -> T {
-            (1 - t) * t0 + t * t1
+            todo!()
         }
     }
 
