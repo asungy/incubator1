@@ -15,4 +15,6 @@
 - [ ] Implement `ToString`
 
 - [x] Implement `tup!` macro
-- [ ] Implement macro to create traits (example: https://docs.rs/num-traits/latest/src/num_traits/identities.rs.html#133)
+- [x] Implement macro to create traits (example: https://docs.rs/num-traits/latest/src/num_traits/identities.rs.html#133)
+
+- [ ] Configure `rustfmt`
