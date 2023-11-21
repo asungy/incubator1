@@ -38,6 +38,8 @@ pub trait Tuple<Rhs = Self, Output = Self>:
     fn ceil(self) -> Self;
     /// Returns a tuple where each of the components are rounded down.
     fn floor(self) -> Self;
+    /// Returns the component-wise fused multiply-add.
+    fn fma(t0: Self, t1: Self, t2: Self) -> Self;
     /// Returns the linear interpolation given between two tuples, provided `t`
     /// (which is a ratio). See: https://en.wikipedia.org/wiki/Linear_interpolation
     fn lerp(t0: Self, t1: Self, t: f64) -> Self;
@@ -98,6 +100,10 @@ macro_rules! impl_tuple2 {
                     x: self.x.floor(),
                     y: self.y.floor(),
                 }
+            }
+
+            fn fma(t0: Self, t1: Self, t2: Self) -> Self {
+                t0 * t1 + t2
             }
 
             fn lerp(t0: Self, t1: Self, t: f64) -> Self {
@@ -313,6 +319,10 @@ macro_rules! impl_tuple3 {
                     y: self.y.floor(),
                     z: self.z.floor(),
                 }
+            }
+
+            fn fma(t0: Self, t1: Self, t2: Self) -> Self {
+                t0 * t1 + t2
             }
 
             fn lerp(t0: Self, t1: Self, t: f64) -> Self {
@@ -594,7 +604,17 @@ mod tuple2_tests {
     fn lerp() {
         let a = Tuple2f32::new(2.0, 5.0);
         let b = Tuple2f32::new(10.0, 14.0);
-        assert_eq!(Tuple2f32::lerp(a, b, 0.75), Tuple2f32::new(8.0, 11.75));
+        let expected = Tuple2f32::new(8.0, 11.75);
+        assert_eq!(Tuple2f32::lerp(a, b, 0.75), expected);
+    }
+
+    #[test]
+    fn fma() {
+        let a = Tuple2f32::new(1., 2.);
+        let b = Tuple2f32::new(2., 3.);
+        let c = Tuple2f32::new(4., 5.);
+        let expected = Tuple2f32::new(6., 11.);
+        assert_eq!(Tuple2f32::fma(a, b, c), expected);
     }
 }
 
@@ -628,5 +648,14 @@ mod tuple3_tests {
         let a = Tuple3f64::new(2.0, 5.0, 7.0);
         let b = Tuple3f64::new(10.0, 14.0, 6.0);
         assert_eq!(Tuple3f64::lerp(a, b, 0.75), Tuple3f64::new(8.0, 11.75, 6.25));
+    }
+
+    #[test]
+    fn fma() {
+        let a = Tuple3f64::new(1., 2., 3.);
+        let b = Tuple3f64::new(4., 5., 6.);
+        let c = Tuple3f64::new(7., 8., 9.);
+        let expected = Tuple3f64::new(11., 18., 27.);
+        assert_eq!(Tuple3f64::fma(a, b, c), expected);
     }
 }

@@ -1,11 +1,11 @@
 - [x] Implement `abs`
 - [x] Implement `ceil`
 - [x] Implement `floor`
-- [ ] Implement `lerp`
+- [x] Implement `lerp`
   - Doesn't make sense to use with integers
   - Need to make separate trait for tuple floats
   - Need to make macros for natural, signed, and float
-- [ ] Implement `fma`
+- [x] Implement `fma`
 - [ ] Implement `min`
 - [ ] Implement `min_component_value`
 - [ ] Implement `max_component_value`
@@ -14,6 +14,7 @@
 - [ ] Implement `permute`
 - [ ] Implement `hprod`
 - [ ] Implement `ToString`
+- [ ] Implement `Default`
 
 - [x] Implement `tup!` macro
 - [x] Implement macro to create traits (example: https://docs.rs/num-traits/latest/src/num_traits/identities.rs.html#133)
