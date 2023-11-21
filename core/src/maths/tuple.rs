@@ -47,15 +47,15 @@ pub trait Tuple<Rhs = Self, Output = Self>:
 
 pub trait Tuple2 {
     type Output;
-    fn x(self) -> Self::Output;
-    fn y(self) -> Self::Output;
+    fn x(&self) -> Self::Output;
+    fn y(&self) -> Self::Output;
 }
 
 pub trait Tuple3 {
     type Output;
-    fn x(self) -> Self::Output;
-    fn y(self) -> Self::Output;
-    fn z(self) -> Self::Output;
+    fn x(&self) -> Self::Output;
+    fn y(&self) -> Self::Output;
+    fn z(&self) -> Self::Output;
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -73,11 +73,11 @@ impl Tuple2f32 {
 impl Tuple2 for Tuple2f32 {
     type Output = f32;
 
-    fn x(self) -> Self::Output {
+    fn x(&self) -> Self::Output {
         self.x
     }
 
-    fn y(self) -> Self::Output {
+    fn y(&self) -> Self::Output {
         self.y
     }
 }
