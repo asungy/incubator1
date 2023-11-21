@@ -31,6 +31,7 @@ pub trait Tuple<Rhs = Self, Output = Self>:
     + Sub<Rhs, Output = Output>
     + SubAssign<Rhs>
 {
+    type Type;
     /// Returns a tuple where each of the components are of their respective absolute
     /// values.
     fn abs(self) -> Self;
@@ -42,11 +43,15 @@ pub trait Tuple<Rhs = Self, Output = Self>:
     fn fma(t0: Self, t1: Self, t2: Self) -> Self;
     /// Returns the linear interpolation given between two tuples, provided `t`
     /// (which is a ratio). See: https://en.wikipedia.org/wiki/Linear_interpolation
-    fn lerp(t0: Self, t1: Self, t: f64) -> Self;
-    // Returns the component-wise maximum.
+    fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self;
+    /// Returns the component-wise maximum.
     fn max(t0: Self, t1: Self) -> Self;
+    /// Returns the maximum value in the tuple's components.
+    fn max_value(self) -> Self::Type;
     /// Returns the component-wise minimum.
     fn min(t0: Self, t1: Self) -> Self;
+    /// Returns the maximum value in the tuple's components.
+    fn min_value(self) -> Self::Type;
     /// Returns the number of elements in the tuple.
     fn ndim() -> usize;
 }
@@ -85,6 +90,8 @@ macro_rules! impl_tuple2 {
         }
 
         impl Tuple for $s {
+            type Type = $t;
+
             fn abs(self) -> Self {
                 Self {
                     x: self.x.abs(),
@@ -110,8 +117,7 @@ macro_rules! impl_tuple2 {
                 t0 * t1 + t2
             }
 
-            fn lerp(t0: Self, t1: Self, t: f64) -> Self {
-                let t = t as $t;
+            fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self {
                 (1.0 - t) * t0 + t * t1
             }
 
@@ -122,11 +128,19 @@ macro_rules! impl_tuple2 {
                 }
             }
 
+            fn max_value(self) -> Self::Type {
+                self.x.max(self.y)
+            }
+
             fn min(t0: Self, t1: Self) -> Self {
                 Self {
                     x: t0.x.min(t1.x),
                     y: t0.y.min(t1.y),
                 }
+            }
+
+            fn min_value(self) -> Self::Type {
+                self.x.min(self.y)
             }
 
             fn ndim() -> usize {
@@ -315,6 +329,8 @@ macro_rules! impl_tuple3 {
         }
 
         impl Tuple for $s {
+            type Type = $t;
+
             fn abs(self) -> Self {
                 Self {
                     x: self.x.abs(),
@@ -343,8 +359,7 @@ macro_rules! impl_tuple3 {
                 t0 * t1 + t2
             }
 
-            fn lerp(t0: Self, t1: Self, t: f64) -> Self {
-                let t = t as $t;
+            fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self {
                 (1.0 - t) * t0 + t * t1
             }
 
@@ -356,12 +371,20 @@ macro_rules! impl_tuple3 {
                 }
             }
 
+            fn max_value(self) -> Self::Type {
+                self.x.max(self.y).max(self.z)
+            }
+
             fn min(t0: Self, t1: Self) -> Self {
                 Self {
                     x: t0.x.min(t1.x),
                     y: t0.y.min(t1.y),
                     z: t0.z.min(t1.z),
                 }
+            }
+
+            fn min_value(self) -> Self::Type {
+                self.x.min(self.y).min(self.z)
             }
 
             fn ndim() -> usize {
@@ -650,6 +673,34 @@ mod tuple2_tests {
         let expected = Tuple2f32::new(6., 11.);
         assert_eq!(Tuple2f32::fma(a, b, c), expected);
     }
+
+    #[test]
+    fn min() {
+        let a = Tuple2f32::new(1., 3.);
+        let b = Tuple2f32::new(2., 2.);
+        let expected = Tuple2f32::new(1., 2.);
+        assert_eq!(Tuple2f32::min(a, b), expected);
+    }
+
+    #[test]
+    fn min_value() {
+        let tup = Tuple2f32::new(111., 222.);
+        assert_eq!(tup.min_value(), 111.);
+    }
+
+    #[test]
+    fn max() {
+        let a = Tuple2f32::new(1., 3.);
+        let b = Tuple2f32::new(2., 2.);
+        let expected = Tuple2f32::new(2., 3.);
+        assert_eq!(Tuple2f32::max(a, b), expected);
+    }
+
+    #[test]
+    fn max_value() {
+        let tup = Tuple2f32::new(111., 222.);
+        assert_eq!(tup.max_value(), 222.);
+    }
 }
 
 #[cfg(test)]
@@ -691,5 +742,33 @@ mod tuple3_tests {
         let c = Tuple3f64::new(7., 8., 9.);
         let expected = Tuple3f64::new(11., 18., 27.);
         assert_eq!(Tuple3f64::fma(a, b, c), expected);
+    }
+
+    #[test]
+    fn min() {
+        let a = Tuple3f64::new(1., 3., 2.);
+        let b = Tuple3f64::new(2., 2., 2.);
+        let expected = Tuple3f64::new(1., 2., 2.);
+        assert_eq!(Tuple3f64::min(a, b), expected);
+    }
+
+    #[test]
+    fn min_value() {
+        let tup = Tuple3f64::new(111., 222., 333.);
+        assert_eq!(tup.min_value(), 111.);
+    }
+
+    #[test]
+    fn max() {
+        let a = Tuple3f64::new(1., 3., 2.);
+        let b = Tuple3f64::new(2., 2., 2.);
+        let expected = Tuple3f64::new(2., 3., 2.);
+        assert_eq!(Tuple3f64::max(a, b), expected);
+    }
+
+    #[test]
+    fn max_value() {
+        let tup = Tuple3f64::new(111., 222., 333.);
+        assert_eq!(tup.max_value(), 333.);
     }
 }
