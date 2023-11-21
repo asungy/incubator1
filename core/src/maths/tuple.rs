@@ -58,213 +58,212 @@ pub trait Tuple3 {
     fn z(&self) -> Self::Output;
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct Tuple2f32 {
-    pub x: f32,
-    pub y: f32,
-}
-
-impl Tuple2f32 {
-    fn new(x: f32, y: f32) -> Self {
-        Self { x, y }
-    }
-}
-
-impl Tuple2 for Tuple2f32 {
-    type Output = f32;
-
-    fn x(&self) -> Self::Output {
-        self.x
-    }
-
-    fn y(&self) -> Self::Output {
-        self.y
-    }
-}
-
-impl Tuple for Tuple2f32 {
-    fn abs(self) -> Self {
-        Self {
-            x: self.x.abs(),
-            y: self.y.abs(),
+macro_rules! impl_tuple2 {
+    ($s:ty, $t:ty) => {
+        impl $s {
+            fn new(x: $t, y: $t) -> Self {
+                Self { x, y }
+            }
         }
-    }
 
-    fn ceil(self) -> Self {
-        Self {
-            x: self.x.ceil(),
-            y: self.y.ceil(),
+        impl Tuple2 for $s {
+            type Output = $t;
+
+            fn x(&self) -> Self::Output {
+                self.x
+            }
+
+            fn y(&self) -> Self::Output {
+                self.y
+            }
         }
-    }
 
-    fn floor(self) -> Self {
-        Self {
-            x: self.x.floor(),
-            y: self.y.floor(),
+        impl Tuple for $s {
+            fn abs(self) -> Self {
+                Self {
+                    x: self.x.abs(),
+                    y: self.y.abs(),
+                }
+            }
+
+            fn ceil(self) -> Self {
+                Self {
+                    x: self.x.ceil(),
+                    y: self.y.ceil(),
+                }
+            }
+
+            fn floor(self) -> Self {
+                Self {
+                    x: self.x.floor(),
+                    y: self.y.floor(),
+                }
+            }
+
+            fn lerp(t0: Self, t1: Self, t: f64) -> Self {
+                let t = t as $t;
+                (1.0 - t) * t0 + t * t1
+            }
+
+            fn ndim() -> usize {
+                2
+            }
         }
-    }
 
-    fn lerp(t0: Self, t1: Self, t: f64) -> Self {
-        let t = t as f32;
-        (1.0 - t) * t0 + t * t1
-    }
+        impl Add<Self> for $s {
+            type Output = Self;
 
-    fn ndim() -> usize {
-        2
-    }
-}
-
-impl Add<Self> for Tuple2f32 {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Self {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
+            fn add(self, rhs: Self) -> Self::Output {
+                Self {
+                    x: self.x + rhs.x,
+                    y: self.y + rhs.y,
+                }
+            }
         }
-    }
-}
 
-impl Add<Tuple2f32> for f32 {
-    type Output = Tuple2f32;
+        impl Add<$s> for $t {
+            type Output = $s;
 
-    fn add(self, rhs: Tuple2f32) -> Self::Output {
-        Self::Output {
-            x: self + rhs.x,
-            y: self + rhs.y,
+            fn add(self, rhs: $s) -> Self::Output {
+                Self::Output {
+                    x: self + rhs.x,
+                    y: self + rhs.y,
+                }
+            }
         }
-    }
-}
 
-impl AddAssign<Self> for Tuple2f32 {
-    fn add_assign(&mut self, rhs: Self) {
-        self.x += rhs.x;
-        self.y += rhs.y;
-    }
-}
-
-impl Div<Self> for Tuple2f32 {
-    type Output = Self;
-
-    fn div(self, rhs: Self) -> Self::Output {
-        Self {
-            x: self.x / rhs.x,
-            y: self.y / rhs.y,
+        impl AddAssign<Self> for $s {
+            fn add_assign(&mut self, rhs: Self) {
+                self.x += rhs.x;
+                self.y += rhs.y;
+            }
         }
-    }
-}
 
-impl DivAssign<Self> for Tuple2f32 {
-    fn div_assign(&mut self, rhs: Self) {
-        self.x /= rhs.x;
-        self.y /= rhs.y;
-    }
-}
+        impl Div<Self> for $s {
+            type Output = Self;
 
-impl Index<usize> for Tuple2f32 {
-    type Output = f32;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        match index {
-            0 => &self.x,
-            1 => &self.y,
-            _ => panic!(
-                "index out of bounds: tuple length is {}, but the index is {}.",
-                Tuple2f32::ndim(),
-                index
-            ),
+            fn div(self, rhs: Self) -> Self::Output {
+                Self {
+                    x: self.x / rhs.x,
+                    y: self.y / rhs.y,
+                }
+            }
         }
-    }
-}
 
-impl IndexMut<usize> for Tuple2f32 {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        match index {
-            0 => &mut self.x,
-            1 => &mut self.y,
-            _ => panic!(
-                "index out of bounds: tuple length is {}, but the index is {}.",
-                Tuple2f32::ndim(),
-                index
-            ),
+        impl DivAssign<Self> for $s {
+            fn div_assign(&mut self, rhs: Self) {
+                self.x /= rhs.x;
+                self.y /= rhs.y;
+            }
         }
-    }
-}
 
-impl Mul<Self> for Tuple2f32 {
-    type Output = Self;
+        impl Index<usize> for $s {
+            type Output = $t;
 
-    fn mul(self, rhs: Self) -> Self::Output {
-        Self {
-            x: self.x * rhs.x,
-            y: self.y * rhs.y,
+            fn index(&self, index: usize) -> &Self::Output {
+                match index {
+                    0 => &self.x,
+                    1 => &self.y,
+                    _ => panic!(
+                        "index out of bounds: tuple length is {}, but the index is {}.",
+                        <$s>::ndim(),
+                        index
+                    ),
+                }
+            }
         }
-    }
-}
 
-impl Mul<Tuple2f32> for f32 {
-    type Output = Tuple2f32;
-
-    fn mul(self, rhs: Tuple2f32) -> Self::Output {
-        Self::Output {
-            x: self * rhs.x,
-            y: self * rhs.y,
+        impl IndexMut<usize> for $s {
+            fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+                match index {
+                    0 => &mut self.x,
+                    1 => &mut self.y,
+                    _ => panic!(
+                        "index out of bounds: tuple length is {}, but the index is {}.",
+                        <$s>::ndim(),
+                        index
+                    ),
+                }
+            }
         }
-    }
-}
 
-impl MulAssign<Self> for Tuple2f32 {
-    fn mul_assign(&mut self, rhs: Self) {
-        self.x *= rhs.x;
-        self.y *= rhs.y;
-    }
-}
+        impl Mul<Self> for $s {
+            type Output = Self;
 
-impl Neg for Tuple2f32 {
-    type Output = Self;
-
-    fn neg(self) -> Self::Output {
-        Self {
-            x: -self.x,
-            y: -self.y,
+            fn mul(self, rhs: Self) -> Self::Output {
+                Self {
+                    x: self.x * rhs.x,
+                    y: self.y * rhs.y,
+                }
+            }
         }
-    }
-}
 
-impl PartialEq for Tuple2f32 {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y
-    }
-}
+        impl Mul<$s> for $t {
+            type Output = $s;
 
-impl Sub<Self> for Tuple2f32 {
-    type Output = Self;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Self {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
+            fn mul(self, rhs: $s) -> Self::Output {
+                Self::Output {
+                    x: self * rhs.x,
+                    y: self * rhs.y,
+                }
+            }
         }
-    }
-}
 
-impl SubAssign<Self> for Tuple2f32 {
-    fn sub_assign(&mut self, rhs: Self) {
-        self.x -= rhs.x;
-        self.y -= rhs.y;
-    }
-}
-
-impl IntoIterator for Tuple2f32 {
-    type Item = f32;
-    type IntoIter = Tuple2Iter<f32>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        Tuple2Iter {
-            tup: Box::new(self),
-            index: 0,
+        impl MulAssign<Self> for $s {
+            fn mul_assign(&mut self, rhs: Self) {
+                self.x *= rhs.x;
+                self.y *= rhs.y;
+            }
         }
-    }
+
+        impl Neg for $s {
+            type Output = Self;
+
+            fn neg(self) -> Self::Output {
+                Self {
+                    x: -self.x,
+                    y: -self.y,
+                }
+            }
+        }
+
+        impl PartialEq for $s {
+            fn eq(&self, other: &Self) -> bool {
+                self.x == other.x && self.y == other.y
+            }
+        }
+
+        impl Sub<Self> for $s {
+            type Output = Self;
+
+            fn sub(self, rhs: Self) -> Self::Output {
+                Self {
+                    x: self.x - rhs.x,
+                    y: self.y - rhs.y,
+                }
+            }
+        }
+
+        impl SubAssign<Self> for $s {
+            fn sub_assign(&mut self, rhs: Self) {
+                self.x -= rhs.x;
+                self.y -= rhs.y;
+            }
+        }
+
+        impl IntoIterator for $s {
+            type Item = $t;
+            type IntoIter = Tuple2Iter<$t>;
+
+            fn into_iter(self) -> Self::IntoIter {
+                Tuple2Iter {
+                    tup: Box::new(self),
+                    index: 0,
+                }
+            }
+        }
+
+    };
 }
 
 #[allow(missing_debug_implementations)]
@@ -287,11 +286,20 @@ impl<T> Iterator for Tuple2Iter<T> {
     }
 }
 
-macro_rules! impl_tuple2 {
-    ($i:item, $t:ty) => {
-
-    };
+#[derive(Debug, Clone, Copy)]
+pub struct Tuple2f32 {
+    pub x: f32,
+    pub y: f32,
 }
+impl_tuple2!(Tuple2f32, f32);
+
+#[derive(Debug, Clone, Copy)]
+pub struct Tuple2f64 {
+    pub x: f64,
+    pub y: f64,
+}
+impl_tuple2!(Tuple2f64, f64);
+
 
 #[cfg(test)]
 mod tuple2_tests {
