@@ -6,7 +6,8 @@
   - Need to make separate trait for tuple floats
   - Need to make macros for natural, signed, and float
 - [x] Implement `fma`
-- [ ] Implement `min`
+- [x] Implement `min`
+- [x] Implement `min`
 - [ ] Implement `min_component_value`
 - [ ] Implement `max_component_value`
 - [ ] Implement `max_component_index`

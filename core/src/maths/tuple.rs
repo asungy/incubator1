@@ -43,6 +43,10 @@ pub trait Tuple<Rhs = Self, Output = Self>:
     /// Returns the linear interpolation given between two tuples, provided `t`
     /// (which is a ratio). See: https://en.wikipedia.org/wiki/Linear_interpolation
     fn lerp(t0: Self, t1: Self, t: f64) -> Self;
+    // Returns the component-wise maximum.
+    fn max(t0: Self, t1: Self) -> Self;
+    /// Returns the component-wise minimum.
+    fn min(t0: Self, t1: Self) -> Self;
     /// Returns the number of elements in the tuple.
     fn ndim() -> usize;
 }
@@ -109,6 +113,20 @@ macro_rules! impl_tuple2 {
             fn lerp(t0: Self, t1: Self, t: f64) -> Self {
                 let t = t as $t;
                 (1.0 - t) * t0 + t * t1
+            }
+
+            fn max(t0: Self, t1: Self) -> Self {
+                Self {
+                    x: t0.x.max(t1.x),
+                    y: t0.y.max(t1.y),
+                }
+            }
+
+            fn min(t0: Self, t1: Self) -> Self {
+                Self {
+                    x: t0.x.min(t1.x),
+                    y: t0.y.min(t1.y),
+                }
             }
 
             fn ndim() -> usize {
@@ -328,6 +346,22 @@ macro_rules! impl_tuple3 {
             fn lerp(t0: Self, t1: Self, t: f64) -> Self {
                 let t = t as $t;
                 (1.0 - t) * t0 + t * t1
+            }
+
+            fn max(t0: Self, t1: Self) -> Self {
+                Self {
+                    x: t0.x.max(t1.x),
+                    y: t0.y.max(t1.y),
+                    z: t0.z.max(t1.z),
+                }
+            }
+
+            fn min(t0: Self, t1: Self) -> Self {
+                Self {
+                    x: t0.x.min(t1.x),
+                    y: t0.y.min(t1.y),
+                    z: t0.z.min(t1.z),
+                }
             }
 
             fn ndim() -> usize {
