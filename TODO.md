@@ -4,6 +4,7 @@
 - [ ] Implement `lerp`
   - Doesn't make sense to use with integers
   - Need to make separate trait for tuple floats
+  - Need to make macros for natural, signed, and float
 - [ ] Implement `fma`
 - [ ] Implement `min`
 - [ ] Implement `min_component_value`

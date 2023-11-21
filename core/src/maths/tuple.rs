@@ -11,10 +11,10 @@ use std::ops::{
     Sub,
     SubAssign,
 };
-use crate::maths::traits::{ Numeric, Float, Signed };
+use crate::maths::traits::{ Natural, Float, Signed };
 use std::iter::{ Iterator, IntoIterator };
 
-pub trait BaseTuple<T: Numeric, Rhs = Self, Output = Self>:
+pub trait BaseTuple<T: Natural, Rhs = Self, Output = Self>:
     Add<Rhs, Output = Output>
     + Add<T, Output = Output>
     + AddAssign<Rhs>
@@ -80,7 +80,7 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> BaseTuple<T> for Tuple2<T> {
+    impl<T: Natural> BaseTuple<T> for Tuple2<T> {
         fn ndim() -> usize {
             2
         }
@@ -108,7 +108,7 @@ pub mod tuple2 {
 
     impl<T: Float> FloatTuple<T> for Tuple2<T> {
         fn lerp(t0: &Self, t1: &Self, t: T) -> Self {
-            todo!()
+            (1 - t) * t0 + t * t1
         }
 
         fn ceil(&self) -> Self {
@@ -126,12 +126,12 @@ pub mod tuple2 {
         }
     }
 
-    pub struct Tuple2Iter<T: Numeric> {
+    pub struct Tuple2Iter<T: Natural> {
         tup: Tuple2<T>,
         index: usize,
     }
 
-    impl<T: Numeric> Iterator for Tuple2Iter<T> {
+    impl<T: Natural> Iterator for Tuple2Iter<T> {
         type Item = T;
 
         fn next(&mut self) -> Option<Self::Item> {
@@ -145,7 +145,7 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> IntoIterator for Tuple2<T> {
+    impl<T: Natural> IntoIterator for Tuple2<T> {
         type Item = T;
         type IntoIter = Tuple2Iter<T>;
 
@@ -157,13 +157,13 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> PartialEq for Tuple2<T> {
+    impl<T: Natural> PartialEq for Tuple2<T> {
         fn eq(&self, other: &Self) -> bool {
             self.x == other.x && self.y == other.y
         }
     }
 
-    impl<T: Numeric> Add<Self> for Tuple2<T> {
+    impl<T: Natural> Add<Self> for Tuple2<T> {
         type Output = Tuple2<T>;
 
         fn add(self, rhs: Self) -> Self::Output {
@@ -174,7 +174,7 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> Add<T> for Tuple2<T> {
+    impl<T: Natural> Add<T> for Tuple2<T> {
         type Output = Tuple2::<T>;
 
         fn add(self, rhs: T) -> Self::Output {
@@ -185,21 +185,21 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> AddAssign<Self> for Tuple2<T> {
+    impl<T: Natural> AddAssign<Self> for Tuple2<T> {
         fn add_assign(&mut self, rhs: Self) {
             self.x += rhs.x;
             self.y += rhs.y;
         }
     }
 
-    impl<T: Numeric> AddAssign<T> for Tuple2<T> {
+    impl<T: Natural> AddAssign<T> for Tuple2<T> {
         fn add_assign(&mut self, rhs: T) {
             self.x += rhs;
             self.y += rhs;
         }
     }
 
-    impl<T: Numeric> Sub<Self> for Tuple2<T> {
+    impl<T: Natural> Sub<Self> for Tuple2<T> {
         type Output = Tuple2<T>;
 
         fn sub(self, rhs: Self) -> Self::Output {
@@ -210,7 +210,7 @@ pub mod tuple2 {
         }
     }
 
-    impl <T: Numeric> Sub<T> for Tuple2<T> {
+    impl<T: Natural> Sub<T> for Tuple2<T> {
         type Output = Tuple2<T>;
 
         fn sub(self, rhs: T) -> Self::Output {
@@ -221,21 +221,21 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> SubAssign<Self> for Tuple2<T> {
+    impl<T: Natural> SubAssign<Self> for Tuple2<T> {
         fn sub_assign(&mut self, rhs: Self) {
             self.x -= rhs.x;
             self.y -= rhs.y;
         }
     }
 
-    impl<T: Numeric> SubAssign<T> for Tuple2<T> {
+    impl<T: Natural> SubAssign<T> for Tuple2<T> {
         fn sub_assign(&mut self, rhs: T) {
             self.x -= rhs;
             self.y -= rhs;
         }
     }
 
-    impl<T: Numeric> Mul<Self> for Tuple2<T> {
+    impl<T: Natural> Mul<Self> for Tuple2<T> {
         type Output = Tuple2<T>;
 
         fn mul(self, rhs: Self) -> Self::Output {
@@ -246,7 +246,7 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> Mul<T> for Tuple2<T> {
+    impl<T: Natural> Mul<T> for Tuple2<T> {
         type Output = Tuple2<T>;
 
         fn mul(self, rhs: T) -> Self::Output {
@@ -257,21 +257,49 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> MulAssign<Self> for Tuple2<T> {
+    impl<T: Natural> MulAssign<Self> for Tuple2<T> {
         fn mul_assign(&mut self, rhs: Self) {
             self.x *= rhs.x;
             self.y *= rhs.y;
         }
     }
 
-    impl<T: Numeric> MulAssign<T> for Tuple2<T> {
+    impl<T: Natural> MulAssign<T> for Tuple2<T> {
         fn mul_assign(&mut self, rhs: T) {
             self.x *= rhs;
             self.y *= rhs;
         }
     }
 
-    impl<T: Numeric> Div<Self> for Tuple2<T> {
+    macro_rules! impl_mul {
+        ($t:ty) => {
+            impl Mul<Tuple2<$t>> for $t {
+                type Output = Tuple2<$t>;
+                fn mul(self, rhs: Self::Output) -> Self::Output {
+                    Tuple2 {
+                        x: rhs.x * self,
+                        y: rhs.y * self,
+                    }
+                }
+            }
+        };
+    }
+    impl_mul!(u8);
+    impl_mul!(u16);
+    impl_mul!(u32);
+    impl_mul!(u64);
+    impl_mul!(u128);
+    impl_mul!(usize);
+    impl_mul!(i8);
+    impl_mul!(i16);
+    impl_mul!(i32);
+    impl_mul!(i64);
+    impl_mul!(i128);
+    impl_mul!(isize);
+    impl_mul!(f32);
+    impl_mul!(f64);
+
+    impl<T: Natural> Div<Self> for Tuple2<T> {
         type Output = Tuple2<T>;
 
         fn div(self, rhs: Self) -> Self::Output {
@@ -282,7 +310,7 @@ pub mod tuple2 {
         }
     }
 
-    impl <T: Numeric> Div<T> for Tuple2<T> {
+    impl <T: Natural> Div<T> for Tuple2<T> {
         type Output = Tuple2<T>;
 
         fn div(self, rhs: T) -> Self::Output {
@@ -293,21 +321,21 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> DivAssign<Self> for Tuple2<T> {
+    impl<T: Natural> DivAssign<Self> for Tuple2<T> {
         fn div_assign(&mut self, rhs: Self) {
             self.x /= rhs.x;
             self.y /= rhs.y;
         }
     }
 
-    impl<T: Numeric> DivAssign<T> for Tuple2<T> {
+    impl<T: Natural> DivAssign<T> for Tuple2<T> {
         fn div_assign(&mut self, rhs: T) {
             self.x /= rhs;
             self.y /= rhs;
         }
     }
 
-    impl<T: Numeric> Index<usize> for Tuple2<T> {
+    impl<T: Natural> Index<usize> for Tuple2<T> {
         type Output = T;
 
         fn index(&self, index: usize) -> &Self::Output {
@@ -319,7 +347,7 @@ pub mod tuple2 {
         }
     }
 
-    impl<T: Numeric> IndexMut<usize> for Tuple2<T> {
+    impl<T: Natural> IndexMut<usize> for Tuple2<T> {
         fn index_mut(&mut self, index: usize) -> &mut Self::Output {
             match index {
                 0 => &mut self.x,
@@ -334,13 +362,13 @@ pub mod tuple3 {
     use super::*;
 
     #[derive(Debug, Clone, Copy)]
-    pub struct Tuple3<T: Numeric> {
+    pub struct Tuple3<T: Natural> {
         pub x: T,
         pub y: T,
         pub z: T,
     }
 
-    impl<T: Numeric> Tuple3<T> {
+    impl<T: Natural> Tuple3<T> {
         pub fn new(x: T, y: T, z: T) -> Self {
             Tuple3 {
                 x,
@@ -350,7 +378,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> BaseTuple<T> for Tuple3<T> {
+    impl<T: Natural> BaseTuple<T> for Tuple3<T> {
         fn ndim() -> usize {
             3
         }
@@ -400,12 +428,12 @@ pub mod tuple3 {
         }
     }
 
-    pub struct Tuple3Iter<T: Numeric> {
+    pub struct Tuple3Iter<T: Natural> {
         tup: Tuple3<T>,
         index: usize,
     }
 
-    impl<T: Numeric> Iterator for Tuple3Iter<T> {
+    impl<T: Natural> Iterator for Tuple3Iter<T> {
         type Item = T;
 
         fn next(&mut self) -> Option<Self::Item> {
@@ -421,7 +449,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> IntoIterator for Tuple3<T> {
+    impl<T: Natural> IntoIterator for Tuple3<T> {
         type Item = T;
         type IntoIter = Tuple3Iter<T>;
 
@@ -433,13 +461,13 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> PartialEq for Tuple3<T> {
+    impl<T: Natural> PartialEq for Tuple3<T> {
         fn eq(&self, other: &Self) -> bool {
             self.x == other.x && self.y == other.y && self.z == other.z
         }
     }
 
-    impl<T: Numeric> Add<Self> for Tuple3<T> {
+    impl<T: Natural> Add<Self> for Tuple3<T> {
         type Output = Tuple3<T>;
 
         fn add(self, rhs: Self) -> Self::Output {
@@ -451,7 +479,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> Add<T> for Tuple3<T> {
+    impl<T: Natural> Add<T> for Tuple3<T> {
         type Output = Tuple3<T>;
 
         fn add(self, rhs: T) -> Self::Output {
@@ -463,7 +491,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> AddAssign<Self> for Tuple3<T> {
+    impl<T: Natural> AddAssign<Self> for Tuple3<T> {
         fn add_assign(&mut self, rhs: Self) {
             self.x += rhs.x;
             self.y += rhs.y;
@@ -471,7 +499,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> AddAssign<T> for Tuple3<T> {
+    impl<T: Natural> AddAssign<T> for Tuple3<T> {
         fn add_assign(&mut self, rhs: T) {
             self.x += rhs;
             self.y += rhs;
@@ -479,7 +507,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> Sub<Self> for Tuple3<T> {
+    impl<T: Natural> Sub<Self> for Tuple3<T> {
         type Output = Tuple3<T>;
 
         fn sub(self, rhs: Self) -> Self::Output {
@@ -491,7 +519,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> Sub<T> for Tuple3<T> {
+    impl<T: Natural> Sub<T> for Tuple3<T> {
         type Output = Tuple3<T>;
 
         fn sub(self, rhs: T) -> Self::Output {
@@ -503,7 +531,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> SubAssign<Self> for Tuple3<T> {
+    impl<T: Natural> SubAssign<Self> for Tuple3<T> {
         fn sub_assign(&mut self, rhs: Self) {
             self.x -= rhs.x;
             self.y -= rhs.y;
@@ -511,7 +539,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> SubAssign<T> for Tuple3<T> {
+    impl<T: Natural> SubAssign<T> for Tuple3<T> {
         fn sub_assign(&mut self, rhs: T) {
             self.x -= rhs;
             self.y -= rhs;
@@ -519,7 +547,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> Mul<Self> for Tuple3<T> {
+    impl<T: Natural> Mul<Self> for Tuple3<T> {
         type Output = Tuple3<T>;
 
         fn mul(self, rhs: Self) -> Self::Output {
@@ -531,7 +559,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> Mul<T> for Tuple3<T> {
+    impl<T: Natural> Mul<T> for Tuple3<T> {
         type Output = Tuple3<T>;
 
         fn mul(self, rhs: T) -> Self::Output {
@@ -543,7 +571,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> MulAssign<Self> for Tuple3<T> {
+    impl<T: Natural> MulAssign<Self> for Tuple3<T> {
         fn mul_assign(&mut self, rhs: Self) {
             self.x *= rhs.x;
             self.y *= rhs.y;
@@ -551,7 +579,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> MulAssign<T> for Tuple3<T> {
+    impl<T: Natural> MulAssign<T> for Tuple3<T> {
         fn mul_assign(&mut self, rhs: T) {
             self.x *= rhs;
             self.y *= rhs;
@@ -559,7 +587,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> Div<Self> for Tuple3<T> {
+    impl<T: Natural> Div<Self> for Tuple3<T> {
         type Output = Tuple3<T>;
 
         fn div(self, rhs: Self) -> Self::Output {
@@ -571,7 +599,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> Div<T> for Tuple3<T> {
+    impl<T: Natural> Div<T> for Tuple3<T> {
         type Output = Tuple3<T>;
 
         fn div(self, rhs: T) -> Self::Output {
@@ -583,7 +611,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> DivAssign<Self> for Tuple3<T> {
+    impl<T: Natural> DivAssign<Self> for Tuple3<T> {
         fn div_assign(&mut self, rhs: Self) {
             self.x /= rhs.x;
             self.y /= rhs.y;
@@ -591,7 +619,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> DivAssign<T> for Tuple3<T> {
+    impl<T: Natural> DivAssign<T> for Tuple3<T> {
         fn div_assign(&mut self, rhs: T) {
             self.x /= rhs;
             self.y /= rhs;
@@ -599,7 +627,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> Index<usize> for Tuple3<T> {
+    impl<T: Natural> Index<usize> for Tuple3<T> {
         type Output = T;
 
         fn index(&self, index: usize) -> &Self::Output {
@@ -612,7 +640,7 @@ pub mod tuple3 {
         }
     }
 
-    impl<T: Numeric> IndexMut<usize> for Tuple3<T> {
+    impl<T: Natural> IndexMut<usize> for Tuple3<T> {
         fn index_mut(&mut self, index: usize) -> &mut Self::Output {
             match index {
                 0 => &mut self.x,
@@ -648,13 +676,6 @@ mod tuple2_tests {
         FloatTuple,
         SignedTuple,
         tuple2::Tuple2,
-        Float,
-        Signed,
-    };
-    use crate::maths::traits::{
-        Abs,
-        Ceil,
-        Floor,
     };
     use crate::tup;
 
@@ -817,33 +838,32 @@ mod tuple2_tests {
 
     #[test]
     fn abs() {
-        // let tup = tup!(32, -84; i32);
-        let tup = Tuple2::<i32>::new(32, -84);
+        let tup = tup!(32, -84);
         assert_eq!(tup.abs(), tup!(32, 84));
     }
 
     #[test]
     fn ceil() {
         let tup = Tuple2::<f32>::new(3.14, 15.92);
-        // assert_eq!(tup.ceil(), Tuple2::<f32>::new(4.0, 16.0));
+        assert_eq!(tup.ceil(), Tuple2::<f32>::new(4.0, 16.0));
     }
 
     #[test]
     fn floor() {
         let tup = Tuple2::<f32>::new(3.14, 15.92);
-        // assert_eq!(tup.floor(), Tuple2::<f32>::new(3.0, 15.0));
+        assert_eq!(tup.floor(), Tuple2::<f32>::new(3.0, 15.0));
     }
 
     #[test]
     fn lerp() {
         let a = tup!(1.0, 2.0);
         let b = tup!(4.0, 5.0);
-        // assert_eq!(Tuple2::<f32>::lerp(&a, &b, 0.75), tup!(1.0, 2.0));
+        assert_eq!(Tuple2::<f32>::lerp(&a, &b, 0.75), tup!(1.0, 2.0));
     }
 
     #[test]
     fn neg() {
-        // assert_eq!(-tup!(1, 2), tup!(-1, -2));
+        assert_eq!(-tup!(1, 2), tup!(-1, -2));
     }
 }
 
@@ -1016,23 +1036,23 @@ mod tuple3_tests {
     #[test]
     fn abs() {
         let tup = tup!(32, -84, -121);
-        // assert_eq!(tup.abs(), tup!(32, 84, 121));
+        assert_eq!(tup.abs(), tup!(32, 84, 121));
     }
 
     #[test]
     fn ceil() {
         let tup = Tuple3::<f64>::new(12.51, 89.5, 16.0);
-        // assert_eq!(tup.ceil(), Tuple3::<f64>::new(13.0, 90.0, 16.0));
+        assert_eq!(tup.ceil(), Tuple3::<f64>::new(13.0, 90.0, 16.0));
     }
 
     #[test]
     fn floor() {
         let tup = Tuple3::<f64>::new(12.51, 89.5, 16.0);
-        // assert_eq!(tup.floor(), Tuple3::<f64>::new(12.0, 89.0, 16.0));
+        assert_eq!(tup.floor(), Tuple3::<f64>::new(12.0, 89.0, 16.0));
     }
 
     #[test]
     fn neg() {
-        // assert_eq!(-tup!(1, 2, 3), tup!(-1, -2, -3));
+        assert_eq!(-tup!(1, 2, 3), tup!(-1, -2, -3));
     }
 }

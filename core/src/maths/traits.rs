@@ -10,32 +10,7 @@ use std::ops::{
     SubAssign,
 };
 
-pub trait Abs {
-    fn abs(self) -> Self;
-}
-
-macro_rules! impl_abs {
-    ($t:ty) => {
-        impl Abs for $t {
-            fn abs(self) -> Self {
-                self.abs()
-            }
-        }
-    };
-}
-
-impl_abs!(i8);
-// NOTE: CONTINUE HERE!
-
-pub trait Ceil {
-    fn ceil(self) -> Self;
-}
-
-pub trait Floor {
-    fn floor(self) -> Self;
-}
-
-pub trait Numeric<Rhs = Self, Output = Self>:
+pub trait Natural<Rhs = Self, Output = Self>:
     Add<Rhs, Output = Output>
     + AddAssign<Rhs>
     + Copy
@@ -48,7 +23,7 @@ pub trait Numeric<Rhs = Self, Output = Self>:
     + SubAssign<Rhs>
 {}
 
-impl<T, Rhs, Output> Numeric<Rhs, Output> for T where T:
+impl<T, Rhs, Output> Natural<Rhs, Output> for T where T:
     Add<Rhs, Output = Output>
     + AddAssign<Rhs>
     + Copy
@@ -62,26 +37,51 @@ impl<T, Rhs, Output> Numeric<Rhs, Output> for T where T:
 {}
 
 pub trait Signed<Rhs = Self, Output = Self>:
-    Numeric<Rhs, Output>
-    + Abs
+    Natural<Rhs, Output>
     + Neg<Output = Output>
-{}
+{
+    fn abs(self) -> Self;
+}
 
-impl<T, Rhs, Output> Signed<Rhs, Output> for T where T:
-    Numeric<Rhs, Output>
-    + Abs
-    + Neg<Output = Output>
-{}
+macro_rules! impl_signed {
+    ($t:ty) => {
+        impl Signed for $t {
+            fn abs(self) -> Self {
+                self.abs()
+            }
+        }
+    };
+}
 
+impl_signed!(i8);
+impl_signed!(i16);
+impl_signed!(i32);
+impl_signed!(i64);
+impl_signed!(i128);
+impl_signed!(isize);
+impl_signed!(f32);
+impl_signed!(f64);
 
 pub trait Float<Rhs = Self, Output = Self>:
     Signed<Rhs, Output>
-    + Ceil
-    + Floor
-{}
+{
+    fn ceil(self) -> Self;
+    fn floor(self) -> Self;
+}
 
-impl<T, Rhs, Output> Float<Rhs, Output> for T where T:
-    Signed<Rhs, Output>
-    + Ceil
-    + Floor
-{}
+macro_rules! impl_float {
+    ($t:ty) => {
+        impl Float for $t {
+            fn ceil(self) -> Self {
+                self.ceil()
+            }
+
+            fn floor(self) -> Self {
+                self.floor()
+            }
+        }
+    };
+}
+
+impl_float!(f32);
+impl_float!(f64);
