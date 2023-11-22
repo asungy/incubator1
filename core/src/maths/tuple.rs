@@ -41,6 +41,8 @@ pub trait Tuple<Rhs = Self, Output = Self>:
     fn floor(self) -> Self;
     /// Returns the component-wise fused multiply-add.
     fn fma(t0: Self, t1: Self, t2: Self) -> Self;
+    /// Returns the horizontal product - component values multiplied together.
+    fn hprod(self) -> Self::Type;
     /// Returns the linear interpolation given between two tuples, provided `t`
     /// (which is a ratio). See: https://en.wikipedia.org/wiki/Linear_interpolation
     fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self;
@@ -123,6 +125,10 @@ macro_rules! impl_tuple2 {
 
             fn fma(t0: Self, t1: Self, t2: Self) -> Self {
                 t0 * t1 + t2
+            }
+
+            fn hprod(self) -> Self::Type {
+                self.x * self.y
             }
 
             fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self {
@@ -384,6 +390,10 @@ macro_rules! impl_tuple3 {
 
             fn fma(t0: Self, t1: Self, t2: Self) -> Self {
                 t0 * t1 + t2
+            }
+
+            fn hprod(self) -> Self::Type {
+                self.x * self.y * self.z
             }
 
             fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self {
@@ -768,6 +778,12 @@ mod tuple2_tests {
         let expected = Tuple2f32::new(2., 1.);
         assert_eq!(tup.permute(perm), expected);
     }
+
+    #[test]
+    fn hprod() {
+        let tup = Tuple2f32::new(1., 2.);
+        assert_eq!(tup.hprod(), 2.);
+    }
 }
 
 #[cfg(test)]
@@ -857,5 +873,11 @@ mod tuple3_tests {
         let perm = vec![1, 2, 0];
         let expected = Tuple3f64::new(2., 3., 1.);
         assert_eq!(tup.permute(perm), expected);
+    }
+
+    #[test]
+    fn hprod() {
+        let tup = Tuple3f64::new(1., 2., 3.);
+        assert_eq!(tup.hprod(), 6.);
     }
 }

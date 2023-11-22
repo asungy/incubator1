@@ -8,11 +8,11 @@
 - [x] Implement `fma`
 - [x] Implement `min`
 - [x] Implement `min`
-- [ ] Implement `min_component_value`
-- [ ] Implement `max_component_value`
-- [ ] Implement `max_component_index`
-- [ ] Implement `min_component_index`
-- [ ] Implement `permute`
+- [x] Implement `min_component_value`
+- [x] Implement `max_component_value`
+- [x] Implement `max_component_index`
+- [x] Implement `min_component_index`
+- [x] Implement `permute`
 - [ ] Implement `hprod`
 - [ ] Implement `ToString`
 - [ ] Implement `Default`
