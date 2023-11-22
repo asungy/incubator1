@@ -82,6 +82,16 @@ pub trait Tuple3 {
     fn z(&self) -> Self::Output;
 }
 
+macro_rules! define_tuple2 {
+    ($i:ident, $t:ty) => {
+        #[derive(Debug, Clone, Copy)]
+        pub struct $i {
+            x: $t,
+            y: $t,
+        }
+    };
+}
+
 macro_rules! impl_tuple2 {
     ($s:ty, $t:ty) => {
         impl $s {
@@ -351,6 +361,17 @@ macro_rules! impl_tuple2 {
             fn default() -> Self {
                 Self { x: 0., y: 0. }
             }
+        }
+    };
+}
+
+macro_rules! define_tuple3 {
+    ($i:ident, $t:ty) => {
+        #[derive(Debug, Clone, Copy)]
+        pub struct $i {
+            x: $t,
+            y: $t,
+            z: $t,
         }
     };
 }
@@ -675,20 +696,6 @@ impl<T> Iterator for Tuple2Iter<T> {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct Tuple2f32 {
-    pub x: f32,
-    pub y: f32,
-}
-impl_tuple2!(Tuple2f32, f32);
-
-#[derive(Debug, Clone, Copy)]
-pub struct Tuple2f64 {
-    pub x: f64,
-    pub y: f64,
-}
-impl_tuple2!(Tuple2f64, f64);
-
 #[allow(missing_debug_implementations)]
 pub struct Tuple3Iter<T> {
     tup: Box<dyn Tuple3<Output = T>>,
@@ -710,20 +717,14 @@ impl<T> Iterator for Tuple3Iter<T> {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct Tuple3f32 {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-}
-impl_tuple3!(Tuple3f32, f32);
+define_tuple2!(Tuple2f32, f32);
+define_tuple2!(Tuple2f64, f64);
+impl_tuple2!(Tuple2f32, f32);
+impl_tuple2!(Tuple2f64, f64);
 
-#[derive(Debug, Clone, Copy)]
-pub struct Tuple3f64 {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
-}
+define_tuple3!(Tuple3f32, f32);
+define_tuple3!(Tuple3f64, f64);
+impl_tuple3!(Tuple3f32, f32);
 impl_tuple3!(Tuple3f64, f64);
 
 #[cfg(test)]
