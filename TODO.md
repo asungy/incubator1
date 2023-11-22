@@ -13,9 +13,9 @@
 - [x] Implement `max_component_index`
 - [x] Implement `min_component_index`
 - [x] Implement `permute`
-- [ ] Implement `hprod`
-- [ ] Implement `ToString`
-- [ ] Implement `Default`
+- [x] Implement `hprod`
+- [x] Implement `Display`
+- [x] Implement `Default`
 
 - [x] Implement `tup!` macro
 - [x] Implement macro to create traits (example: https://docs.rs/num-traits/latest/src/num_traits/identities.rs.html#133)

@@ -14,11 +14,13 @@ use std::ops::{
 use std::marker::Copy;
 use std::cmp::PartialEq;
 use std::iter::{ Iterator, IntoIterator };
+use std::fmt;
 
 pub trait Tuple<Rhs = Self, Output = Self>:
     Add<Rhs, Output = Output>
     + AddAssign<Rhs>
     + Copy
+    + Default
     + Div<Rhs, Output = Output>
     + DivAssign<Rhs>
     + Index<usize>
@@ -30,6 +32,7 @@ pub trait Tuple<Rhs = Self, Output = Self>:
     + PartialEq
     + Sub<Rhs, Output = Output>
     + SubAssign<Rhs>
+    + fmt::Display
 {
     type Type;
     /// Returns a tuple where each of the components are of their respective absolute
@@ -334,6 +337,20 @@ macro_rules! impl_tuple2 {
             }
         }
 
+        impl fmt::Display for $s {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "({}, {})", self.x, self.y)
+            }
+        }
+
+        impl Default for $s {
+            fn default() -> Self {
+                Self {
+                    x: 0.,
+                    y: 0.,
+                }
+            }
+        }
     };
 }
 
@@ -615,6 +632,21 @@ macro_rules! impl_tuple3 {
             }
         }
 
+        impl fmt::Display for $s {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "({}, {}, {})", self.x, self.y, self.z)
+            }
+        }
+
+        impl Default for $s {
+            fn default() -> Self {
+                Self {
+                    x: 0.,
+                    y: 0.,
+                    z: 0.,
+                }
+            }
+        }
     };
 }
 
