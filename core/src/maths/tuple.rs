@@ -60,6 +60,8 @@ pub trait Tuple<Rhs = Self, Output = Self>:
     fn min_value(self) -> Self::Type;
     /// Returns the number of elements in the tuple.
     fn ndim() -> usize;
+    /// Returns the permutation of the tuple according to an array of indices.
+    fn permute(self, perm: Vec<usize>) -> Self;
 }
 
 pub trait Tuple2 {
@@ -163,6 +165,13 @@ macro_rules! impl_tuple2 {
 
             fn ndim() -> usize {
                 2
+            }
+
+            fn permute(self, perm: Vec<usize>) -> Self {
+                Self {
+                    x: self[perm[0]],
+                    y: self[perm[1]],
+                }
             }
         }
 
@@ -419,6 +428,14 @@ macro_rules! impl_tuple3 {
 
             fn ndim() -> usize {
                 3
+            }
+
+            fn permute(self, perm: Vec<usize>) -> Self {
+                Self {
+                    x: self[perm[0]],
+                    y: self[perm[1]],
+                    z: self[perm[2]],
+                }
             }
         }
 
@@ -743,6 +760,14 @@ mod tuple2_tests {
         let tup = Tuple2f32::new(111., 222.);
         assert_eq!(tup.max_value(), 222.);
     }
+
+    #[test]
+    fn perm() {
+        let tup = Tuple2f32::new(1., 2.);
+        let perm = vec![1, 0];
+        let expected = Tuple2f32::new(2., 1.);
+        assert_eq!(tup.permute(perm), expected);
+    }
 }
 
 #[cfg(test)]
@@ -824,5 +849,13 @@ mod tuple3_tests {
     fn max_value() {
         let tup = Tuple3f64::new(111., 222., 333.);
         assert_eq!(tup.max_value(), 333.);
+    }
+
+    #[test]
+    fn permute() {
+        let tup = Tuple3f64::new(1., 2., 3.);
+        let perm = vec![1, 2, 0];
+        let expected = Tuple3f64::new(2., 3., 1.);
+        assert_eq!(tup.permute(perm), expected);
     }
 }
