@@ -183,6 +183,8 @@ macro_rules! impl_tuple2_base {
 
 macro_rules! impl_tuple2_natural {
     ($s:ty, $t:ty) => {
+        impl_tuple2_base!($s, $t);
+
         impl Natural for $s {
             type Type = $t;
 
@@ -344,6 +346,8 @@ macro_rules! impl_tuple2_natural {
 
 macro_rules! impl_tuple2_signed {
     ($s:ty, $t:ty) => {
+        impl_tuple2_natural!($s, $t);
+
         impl Signed for $s {
             fn abs(self) -> Self {
                 Self {
@@ -368,6 +372,8 @@ macro_rules! impl_tuple2_signed {
 
 macro_rules! impl_tuple2_float {
     ($s:ty, $t:ty) => {
+        impl_tuple2_signed!($s, $t);
+
         impl Float for $s {
             fn ceil(self) -> Self {
                 Self {
@@ -486,6 +492,8 @@ macro_rules! impl_tuple3_base {
 
 macro_rules! impl_tuple3_natural {
     ($s:ty, $t:ty) => {
+        impl_tuple3_base!($s, $t);
+
         impl Natural for $s {
             type Type = $t;
 
@@ -661,6 +669,8 @@ macro_rules! impl_tuple3_natural {
 
 macro_rules! impl_tuple3_signed {
     ($s:ty, $t:ty) => {
+        impl_tuple3_natural!($s, $t);
+
         impl Signed for $s {
             fn abs(self) -> Self {
                 Self {
@@ -688,6 +698,8 @@ macro_rules! impl_tuple3_signed {
 
 macro_rules! impl_tuple3_float {
     ($s:ty, $t:ty) => {
+        impl_tuple3_signed!($s, $t);
+
         impl Float for $s {
             fn ceil(self) -> Self {
                 Self {
@@ -758,130 +770,74 @@ impl<T> Iterator for Tuple3Iter<T> {
 // Natural
 ////////////////////////////////////////////////////
 
-// Tuple2(u8)
 define_tuple2!(Tuple2u8, u8);
-impl_tuple2_base!(Tuple2u8, u8);
 impl_tuple2_natural!(Tuple2u8, u8);
 
-// Tuple2(u16)
 define_tuple2!(Tuple2u16, u16);
-impl_tuple2_base!(Tuple2u16, u16);
 impl_tuple2_natural!(Tuple2u16, u16);
 
-// Tuple2(u32)
 define_tuple2!(Tuple2u32, u32);
-impl_tuple2_base!(Tuple2u32, u32);
 impl_tuple2_natural!(Tuple2u32, u32);
 
-// Tuple2(u64)
 define_tuple2!(Tuple2u64, u64);
-impl_tuple2_base!(Tuple2u64, u64);
 impl_tuple2_natural!(Tuple2u64, u64);
 
-// Tuple2(u128)
 define_tuple2!(Tuple2u128, u128);
-impl_tuple2_base!(Tuple2u128, u128);
 impl_tuple2_natural!(Tuple2u128, u128);
 
-// Tuple3(u8)
 define_tuple3!(Tuple3u8, u8);
-impl_tuple3_base!(Tuple3u8, u8);
 impl_tuple3_natural!(Tuple3u8, u8);
 
-// Tuple3(u16)
 define_tuple3!(Tuple3u16, u16);
-impl_tuple3_base!(Tuple3u16, u16);
 impl_tuple3_natural!(Tuple3u16, u16);
 
-// Tuple3(u32)
 define_tuple3!(Tuple3u32, u32);
-impl_tuple3_base!(Tuple3u32, u32);
 impl_tuple3_natural!(Tuple3u32, u32);
 
-// Tuple3(u64)
 define_tuple3!(Tuple3u64, u64);
-impl_tuple3_base!(Tuple3u64, u64);
 impl_tuple3_natural!(Tuple3u64, u64);
 
-// Tuple3(u128)
 define_tuple3!(Tuple3u128, u128);
-impl_tuple3_base!(Tuple3u128, u128);
 impl_tuple3_natural!(Tuple3u128, u128);
 
 ////////////////////////////////////////////////////
 // Signed
 ////////////////////////////////////////////////////
 
-// Tuple2(i8)
 define_tuple2!(Tuple2i8, i8);
-impl_tuple2_base!(Tuple2i8, i8);
-impl_tuple2_natural!(Tuple2i8, i8);
 impl_tuple2_signed!(Tuple2i8, i8);
 
-// Tuple2(i16)
 define_tuple2!(Tuple2i16, i16);
-impl_tuple2_base!(Tuple2i16, i16);
-impl_tuple2_natural!(Tuple2i16, i16);
 impl_tuple2_signed!(Tuple2i16, i16);
 
-// Tuple2(i32)
 define_tuple2!(Tuple2i32, i32);
-impl_tuple2_base!(Tuple2i32, i32);
-impl_tuple2_natural!(Tuple2i32, i32);
 impl_tuple2_signed!(Tuple2i32, i32);
 
-// Tuple2(i64)
 define_tuple2!(Tuple2i64, i64);
-impl_tuple2_base!(Tuple2i64, i64);
-impl_tuple2_natural!(Tuple2i64, i64);
 impl_tuple2_signed!(Tuple2i64, i64);
 
-// Tuple2(i128)
 define_tuple2!(Tuple2i128, i128);
-impl_tuple2_base!(Tuple2i128, i128);
-impl_tuple2_natural!(Tuple2i128, i128);
 impl_tuple2_signed!(Tuple2i128, i128);
 
-// Tuple2(isize)
 define_tuple2!(Tuple2isize, isize);
-impl_tuple2_base!(Tuple2isize, isize);
-impl_tuple2_natural!(Tuple2isize, isize);
 impl_tuple2_signed!(Tuple2isize, isize);
 
-// Tuple3(i8)
 define_tuple3!(Tuple3i8, i8);
-impl_tuple3_base!(Tuple3i8, i8);
-impl_tuple3_natural!(Tuple3i8, i8);
 impl_tuple3_signed!(Tuple3i8, i8);
 
-// Tuple3(i16)
 define_tuple3!(Tuple3i16, i16);
-impl_tuple3_base!(Tuple3i16, i16);
-impl_tuple3_natural!(Tuple3i16, i16);
 impl_tuple3_signed!(Tuple3i16, i16);
 
-// Tuple3(i32)
 define_tuple3!(Tuple3i32, i32);
-impl_tuple3_base!(Tuple3i32, i32);
-impl_tuple3_natural!(Tuple3i32, i32);
 impl_tuple3_signed!(Tuple3i32, i32);
 
-// Tuple3(i64)
 define_tuple3!(Tuple3i64, i64);
-impl_tuple3_base!(Tuple3i64, i64);
-impl_tuple3_natural!(Tuple3i64, i64);
 impl_tuple3_signed!(Tuple3i64, i64);
 
-// Tuple3(i128)
 define_tuple3!(Tuple3i128, i128);
-impl_tuple3_base!(Tuple3i128, i128);
-impl_tuple3_natural!(Tuple3i128, i128);
 impl_tuple3_signed!(Tuple3i128, i128);
 
-// Tuple3(isize)
 define_tuple3!(Tuple3isize, isize);
-impl_tuple3_base!(Tuple3isize, isize);
-impl_tuple3_natural!(Tuple3isize, isize);
 impl_tuple3_signed!(Tuple3isize, isize);
 
 ////////////////////////////////////////////////////
@@ -890,30 +846,18 @@ impl_tuple3_signed!(Tuple3isize, isize);
 
 // Tuple2(f32)
 define_tuple2!(Tuple2f32, f32);
-impl_tuple2_base!(Tuple2f32, f32);
-impl_tuple2_natural!(Tuple2f32, f32);
-impl_tuple2_signed!(Tuple2f32, f32);
 impl_tuple2_float!(Tuple2f32, f32);
 
 // Tuple2(f64)
 define_tuple2!(Tuple2f64, f64);
-impl_tuple2_base!(Tuple2f64, f64);
-impl_tuple2_natural!(Tuple2f64, f64);
-impl_tuple2_signed!(Tuple2f64, f64);
 impl_tuple2_float!(Tuple2f64, f64);
 
 // Tuple3(f32)
 define_tuple3!(Tuple3f32, f32);
-impl_tuple3_base!(Tuple3f32, f32);
-impl_tuple3_natural!(Tuple3f32, f32);
-impl_tuple3_signed!(Tuple3f32, f32);
 impl_tuple3_float!(Tuple3f32, f32);
 
 // Tuple3(f64)
 define_tuple3!(Tuple3f64, f64);
-impl_tuple3_base!(Tuple3f64, f64);
-impl_tuple3_natural!(Tuple3f64, f64);
-impl_tuple3_signed!(Tuple3f64, f64);
 impl_tuple3_float!(Tuple3f64, f64);
 
 ////////////////////////////////////////////////////
