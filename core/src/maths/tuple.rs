@@ -46,10 +46,16 @@ pub trait Tuple<Rhs = Self, Output = Self>:
     fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self;
     /// Returns the component-wise maximum.
     fn max(t0: Self, t1: Self) -> Self;
+    /// Returns the zero-based index that has the maximum value in the tuple's
+    /// components.
+    fn max_index(self) -> usize;
     /// Returns the maximum value in the tuple's components.
     fn max_value(self) -> Self::Type;
     /// Returns the component-wise minimum.
     fn min(t0: Self, t1: Self) -> Self;
+    /// Returns the zero-based index that has the maximum value in the tuple's
+    /// components.
+    fn min_index(self) -> usize;
     /// Returns the maximum value in the tuple's components.
     fn min_value(self) -> Self::Type;
     /// Returns the number of elements in the tuple.
@@ -128,6 +134,12 @@ macro_rules! impl_tuple2 {
                 }
             }
 
+            fn max_index(self) -> usize {
+                self.into_iter().enumerate().max_by(|(_, a), (_, b)| {
+                    a.partial_cmp(b).unwrap()
+                }).unwrap().0
+            }
+
             fn max_value(self) -> Self::Type {
                 self.x.max(self.y)
             }
@@ -137,6 +149,12 @@ macro_rules! impl_tuple2 {
                     x: t0.x.min(t1.x),
                     y: t0.y.min(t1.y),
                 }
+            }
+
+            fn min_index(self) -> usize {
+                self.into_iter().enumerate().min_by(|(_, a), (_, b)| {
+                    a.partial_cmp(b).unwrap()
+                }).unwrap().0
             }
 
             fn min_value(self) -> Self::Type {
@@ -371,6 +389,12 @@ macro_rules! impl_tuple3 {
                 }
             }
 
+            fn max_index(self) -> usize {
+                self.into_iter().enumerate().max_by(|(_, a), (_, b)| {
+                    a.partial_cmp(b).unwrap()
+                }).unwrap().0
+            }
+
             fn max_value(self) -> Self::Type {
                 self.x.max(self.y).max(self.z)
             }
@@ -381,6 +405,12 @@ macro_rules! impl_tuple3 {
                     y: t0.y.min(t1.y),
                     z: t0.z.min(t1.z),
                 }
+            }
+
+            fn min_index(self) -> usize {
+                self.into_iter().enumerate().min_by(|(_, a), (_, b)| {
+                    a.partial_cmp(b).unwrap()
+                }).unwrap().0
             }
 
             fn min_value(self) -> Self::Type {
@@ -683,6 +713,12 @@ mod tuple2_tests {
     }
 
     #[test]
+    fn min_index() {
+        let tup = Tuple2f32::new(111., 222.);
+        assert_eq!(tup.min_index(), 0);
+    }
+
+    #[test]
     fn min_value() {
         let tup = Tuple2f32::new(111., 222.);
         assert_eq!(tup.min_value(), 111.);
@@ -694,6 +730,12 @@ mod tuple2_tests {
         let b = Tuple2f32::new(2., 2.);
         let expected = Tuple2f32::new(2., 3.);
         assert_eq!(Tuple2f32::max(a, b), expected);
+    }
+
+    #[test]
+    fn max_index() {
+        let tup = Tuple2f32::new(111., 222.);
+        assert_eq!(tup.max_index(), 1);
     }
 
     #[test]
@@ -753,6 +795,12 @@ mod tuple3_tests {
     }
 
     #[test]
+    fn min_index() {
+        let tup = Tuple3f64::new(111., 222., 333.);
+        assert_eq!(tup.min_index(), 0);
+    }
+
+    #[test]
     fn min_value() {
         let tup = Tuple3f64::new(111., 222., 333.);
         assert_eq!(tup.min_value(), 111.);
@@ -764,6 +812,12 @@ mod tuple3_tests {
         let b = Tuple3f64::new(2., 2., 2.);
         let expected = Tuple3f64::new(2., 3., 2.);
         assert_eq!(Tuple3f64::max(a, b), expected);
+    }
+
+    #[test]
+    fn max_index() {
+        let tup = Tuple3f64::new(111., 222., 333.);
+        assert_eq!(tup.max_index(), 2);
     }
 
     #[test]
