@@ -1,3 +1,7 @@
+use std::cmp::PartialEq;
+use std::fmt;
+use std::iter::{IntoIterator, Iterator};
+use std::marker::Copy;
 use std::ops::{
     Add,
     AddAssign,
@@ -11,10 +15,6 @@ use std::ops::{
     Sub,
     SubAssign,
 };
-use std::marker::Copy;
-use std::cmp::PartialEq;
-use std::iter::{ Iterator, IntoIterator };
-use std::fmt;
 
 pub trait Tuple<Rhs = Self, Output = Self>:
     Add<Rhs, Output = Output>
@@ -146,9 +146,11 @@ macro_rules! impl_tuple2 {
             }
 
             fn max_index(self) -> usize {
-                self.into_iter().enumerate().max_by(|(_, a), (_, b)| {
-                    a.partial_cmp(b).unwrap()
-                }).unwrap().0
+                self.into_iter()
+                    .enumerate()
+                    .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+                    .unwrap()
+                    .0
             }
 
             fn max_value(self) -> Self::Type {
@@ -163,9 +165,11 @@ macro_rules! impl_tuple2 {
             }
 
             fn min_index(self) -> usize {
-                self.into_iter().enumerate().min_by(|(_, a), (_, b)| {
-                    a.partial_cmp(b).unwrap()
-                }).unwrap().0
+                self.into_iter()
+                    .enumerate()
+                    .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+                    .unwrap()
+                    .0
             }
 
             fn min_value(self) -> Self::Type {
@@ -345,10 +349,7 @@ macro_rules! impl_tuple2 {
 
         impl Default for $s {
             fn default() -> Self {
-                Self {
-                    x: 0.,
-                    y: 0.,
-                }
+                Self { x: 0., y: 0. }
             }
         }
     };
@@ -426,9 +427,11 @@ macro_rules! impl_tuple3 {
             }
 
             fn max_index(self) -> usize {
-                self.into_iter().enumerate().max_by(|(_, a), (_, b)| {
-                    a.partial_cmp(b).unwrap()
-                }).unwrap().0
+                self.into_iter()
+                    .enumerate()
+                    .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+                    .unwrap()
+                    .0
             }
 
             fn max_value(self) -> Self::Type {
@@ -444,9 +447,11 @@ macro_rules! impl_tuple3 {
             }
 
             fn min_index(self) -> usize {
-                self.into_iter().enumerate().min_by(|(_, a), (_, b)| {
-                    a.partial_cmp(b).unwrap()
-                }).unwrap().0
+                self.into_iter()
+                    .enumerate()
+                    .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+                    .unwrap()
+                    .0
             }
 
             fn min_value(self) -> Self::Type {
@@ -723,7 +728,7 @@ impl_tuple3!(Tuple3f64, f64);
 
 #[cfg(test)]
 mod tuple2_tests {
-    use super::{ Tuple2f32, Tuple };
+    use super::{Tuple, Tuple2f32};
 
     #[test]
     fn abs() {
@@ -820,7 +825,7 @@ mod tuple2_tests {
 
 #[cfg(test)]
 mod tuple3_tests {
-    use super::{ Tuple3f64, Tuple };
+    use super::{Tuple, Tuple3f64};
 
     #[test]
     fn abs() {
@@ -847,7 +852,10 @@ mod tuple3_tests {
     fn lerp() {
         let a = Tuple3f64::new(2.0, 5.0, 7.0);
         let b = Tuple3f64::new(10.0, 14.0, 6.0);
-        assert_eq!(Tuple3f64::lerp(a, b, 0.75), Tuple3f64::new(8.0, 11.75, 6.25));
+        assert_eq!(
+            Tuple3f64::lerp(a, b, 0.75),
+            Tuple3f64::new(8.0, 11.75, 6.25)
+        );
     }
 
     #[test]
