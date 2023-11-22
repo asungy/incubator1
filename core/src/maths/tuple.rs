@@ -16,57 +16,8 @@ use std::ops::{
     SubAssign,
 };
 
-pub trait Tuple<Rhs = Self, Output = Self>:
-    Add<Rhs, Output = Output>
-    + AddAssign<Rhs>
-    + Copy
-    + Default
-    + Div<Rhs, Output = Output>
-    + DivAssign<Rhs>
-    + Index<usize>
-    + IndexMut<usize>
-    + IntoIterator
-    + Mul<Rhs, Output = Output>
-    + MulAssign<Rhs>
-    + Neg
-    + PartialEq
-    + Sub<Rhs, Output = Output>
-    + SubAssign<Rhs>
-    + fmt::Display
-{
-    type Type;
-    /// Returns a tuple where each of the components are of their respective absolute
-    /// values.
-    fn abs(self) -> Self;
-    /// Returns a tuple where each of the components are rounded up.
-    fn ceil(self) -> Self;
-    /// Returns a tuple where each of the components are rounded down.
-    fn floor(self) -> Self;
-    /// Returns the component-wise fused multiply-add.
-    fn fma(t0: Self, t1: Self, t2: Self) -> Self;
-    /// Returns the horizontal product - component values multiplied together.
-    fn hprod(self) -> Self::Type;
-    /// Returns the linear interpolation given between two tuples, provided `t`
-    /// (which is a ratio). See: https://en.wikipedia.org/wiki/Linear_interpolation
-    fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self;
-    /// Returns the component-wise maximum.
-    fn max(t0: Self, t1: Self) -> Self;
-    /// Returns the zero-based index that has the maximum value in the tuple's
-    /// components.
-    fn max_index(self) -> usize;
-    /// Returns the maximum value in the tuple's components.
-    fn max_value(self) -> Self::Type;
-    /// Returns the component-wise minimum.
-    fn min(t0: Self, t1: Self) -> Self;
-    /// Returns the zero-based index that has the maximum value in the tuple's
-    /// components.
-    fn min_index(self) -> usize;
-    /// Returns the maximum value in the tuple's components.
-    fn min_value(self) -> Self::Type;
-    /// Returns the number of elements in the tuple.
-    fn ndim() -> usize;
-    /// Returns the permutation of the tuple according to an array of indices.
-    fn permute(self, perm: Vec<usize>) -> Self;
+pub mod prelude {
+    pub use super::{BaseTuple, Float, Natural, Signed, Tuple2, Tuple3};
 }
 
 pub trait Tuple2 {
@@ -82,6 +33,68 @@ pub trait Tuple3 {
     fn z(&self) -> Self::Output;
 }
 
+pub trait BaseTuple:
+    fmt::Display
+    + Copy
+    + Index<usize>
+    + IndexMut<usize>
+    + IntoIterator
+{
+    /// Returns the number of elements in the tuple.
+    fn ndim() -> usize;
+}
+
+pub trait Natural<Rhs = Self, Output = Self>:
+    BaseTuple
+    + Add<Rhs, Output = Output>
+    + AddAssign<Rhs>
+    + Div<Rhs, Output = Output>
+    + DivAssign<Rhs>
+    + Mul<Rhs, Output = Output>
+    + MulAssign<Rhs>
+    + PartialEq
+    + Sub<Rhs, Output = Output>
+    + SubAssign<Rhs>
+{
+    type Type;
+    /// Returns the component-wise fused multiply-add.
+    fn fma(t0: Self, t1: Self, t2: Self) -> Self;
+    /// Returns the horizontal product - component values multiplied together.
+    fn hprod(self) -> Self::Type;
+    /// Returns the component-wise maximum.
+    fn max(t0: Self, t1: Self) -> Self;
+    /// Returns the zero-based index that has the maximum value in the tuple's
+    /// components.
+    fn max_index(self) -> usize;
+    /// Returns the maximum value in the tuple's components.
+    fn max_value(self) -> Self::Type;
+    /// Returns the component-wise minimum.
+    fn min(t0: Self, t1: Self) -> Self;
+    /// Returns the zero-based index that has the maximum value in the tuple's
+    /// components.
+    fn min_index(self) -> usize;
+    /// Returns the maximum value in the tuple's components.
+    fn min_value(self) -> Self::Type;
+    /// Returns the permutation of the tuple according to an array of indices.
+    fn permute(self, perm: Vec<usize>) -> Self;
+}
+
+pub trait Signed<Rhs = Self, Output = Self>: Natural<Rhs, Output> + Neg {
+    /// Returns a tuple where each of the components are of their respective absolute
+    /// values.
+    fn abs(self) -> Self;
+}
+
+pub trait Float<Rhs = Self, Output = Self>: Signed<Rhs, Output> {
+    /// Returns a tuple where each of the components are rounded up.
+    fn ceil(self) -> Self;
+    /// Returns a tuple where each of the components are rounded down.
+    fn floor(self) -> Self;
+    /// Returns the linear interpolation given between two tuples, provided `t`
+    /// (which is a ratio). See: https://en.wikipedia.org/wiki/Linear_interpolation
+    fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self;
+}
+
 macro_rules! define_tuple2 {
     ($i:ident, $t:ty) => {
         #[derive(Debug, Clone, Copy)]
@@ -92,14 +105,8 @@ macro_rules! define_tuple2 {
     };
 }
 
-macro_rules! impl_tuple2 {
+macro_rules! impl_tuple2_base {
     ($s:ty, $t:ty) => {
-        impl $s {
-            fn new(x: $t, y: $t) -> Self {
-                Self { x, y }
-            }
-        }
-
         impl Tuple2 for $s {
             type Output = $t;
 
@@ -112,29 +119,72 @@ macro_rules! impl_tuple2 {
             }
         }
 
-        impl Tuple for $s {
+        impl $s {
+            fn new(x: $t, y: $t) -> Self {
+                Self { x, y }
+            }
+        }
+
+        impl BaseTuple for $s {
+            fn ndim() -> usize {
+                2
+            }
+        }
+
+        impl Index<usize> for $s {
+            type Output = $t;
+
+            fn index(&self, index: usize) -> &Self::Output {
+                match index {
+                    0 => &self.x,
+                    1 => &self.y,
+                    _ => panic!(
+                        "index out of bounds: tuple length is {}, but the index is {}.",
+                        <$s>::ndim(),
+                        index
+                    ),
+                }
+            }
+        }
+
+        impl IndexMut<usize> for $s {
+            fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+                match index {
+                    0 => &mut self.x,
+                    1 => &mut self.y,
+                    _ => panic!(
+                        "index out of bounds: tuple length is {}, but the index is {}.",
+                        <$s>::ndim(),
+                        index
+                    ),
+                }
+            }
+        }
+
+        impl IntoIterator for $s {
+            type Item = $t;
+            type IntoIter = Tuple2Iter<$t>;
+
+            fn into_iter(self) -> Self::IntoIter {
+                Tuple2Iter {
+                    tup: Box::new(self),
+                    index: 0,
+                }
+            }
+        }
+
+        impl fmt::Display for $s {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "({}, {})", self.x, self.y)
+            }
+        }
+    };
+}
+
+macro_rules! impl_tuple2_natural {
+    ($s:ty, $t:ty) => {
+        impl Natural for $s {
             type Type = $t;
-
-            fn abs(self) -> Self {
-                Self {
-                    x: self.x.abs(),
-                    y: self.y.abs(),
-                }
-            }
-
-            fn ceil(self) -> Self {
-                Self {
-                    x: self.x.ceil(),
-                    y: self.y.ceil(),
-                }
-            }
-
-            fn floor(self) -> Self {
-                Self {
-                    x: self.x.floor(),
-                    y: self.y.floor(),
-                }
-            }
 
             fn fma(t0: Self, t1: Self, t2: Self) -> Self {
                 t0 * t1 + t2
@@ -142,10 +192,6 @@ macro_rules! impl_tuple2 {
 
             fn hprod(self) -> Self::Type {
                 self.x * self.y
-            }
-
-            fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self {
-                (1.0 - t) * t0 + t * t1
             }
 
             fn max(t0: Self, t1: Self) -> Self {
@@ -184,10 +230,6 @@ macro_rules! impl_tuple2 {
 
             fn min_value(self) -> Self::Type {
                 self.x.min(self.y)
-            }
-
-            fn ndim() -> usize {
-                2
             }
 
             fn permute(self, perm: Vec<usize>) -> Self {
@@ -245,36 +287,6 @@ macro_rules! impl_tuple2 {
             }
         }
 
-        impl Index<usize> for $s {
-            type Output = $t;
-
-            fn index(&self, index: usize) -> &Self::Output {
-                match index {
-                    0 => &self.x,
-                    1 => &self.y,
-                    _ => panic!(
-                        "index out of bounds: tuple length is {}, but the index is {}.",
-                        <$s>::ndim(),
-                        index
-                    ),
-                }
-            }
-        }
-
-        impl IndexMut<usize> for $s {
-            fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-                match index {
-                    0 => &mut self.x,
-                    1 => &mut self.y,
-                    _ => panic!(
-                        "index out of bounds: tuple length is {}, but the index is {}.",
-                        <$s>::ndim(),
-                        index
-                    ),
-                }
-            }
-        }
-
         impl Mul<Self> for $s {
             type Output = Self;
 
@@ -304,17 +316,6 @@ macro_rules! impl_tuple2 {
             }
         }
 
-        impl Neg for $s {
-            type Output = Self;
-
-            fn neg(self) -> Self::Output {
-                Self {
-                    x: -self.x,
-                    y: -self.y,
-                }
-            }
-        }
-
         impl PartialEq for $s {
             fn eq(&self, other: &Self) -> bool {
                 self.x == other.x && self.y == other.y
@@ -338,29 +339,54 @@ macro_rules! impl_tuple2 {
                 self.y -= rhs.y;
             }
         }
+    };
+}
 
-        impl IntoIterator for $s {
-            type Item = $t;
-            type IntoIter = Tuple2Iter<$t>;
-
-            fn into_iter(self) -> Self::IntoIter {
-                Tuple2Iter {
-                    tup: Box::new(self),
-                    index: 0,
+macro_rules! impl_tuple2_signed {
+    ($s:ty, $t:ty) => {
+        impl Signed for $s {
+            fn abs(self) -> Self {
+                Self {
+                    x: self.x.abs(),
+                    y: self.y.abs(),
                 }
             }
         }
 
-        impl fmt::Display for $s {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                write!(f, "({}, {})", self.x, self.y)
+        impl Neg for $s {
+            type Output = Self;
+
+            fn neg(self) -> Self::Output {
+                Self {
+                    x: -self.x,
+                    y: -self.y,
+                }
             }
         }
+    };
+}
 
-        impl Default for $s {
-            fn default() -> Self {
-                Self { x: 0., y: 0. }
+macro_rules! impl_tuple2_float {
+    ($s:ty, $t:ty) => {
+        impl Float for $s {
+            fn ceil(self) -> Self {
+                Self {
+                    x: self.x.ceil(),
+                    y: self.y.ceil(),
+                }
             }
+
+            fn floor(self) -> Self {
+                Self {
+                    x: self.x.floor(),
+                    y: self.y.floor(),
+                }
+            }
+
+            fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self {
+                (1.0 - t) * t0 + t * t1
+            }
+
         }
     };
 }
@@ -376,14 +402,8 @@ macro_rules! define_tuple3 {
     };
 }
 
-macro_rules! impl_tuple3 {
+macro_rules! impl_tuple3_base {
     ($s:ty, $t:ty) => {
-        impl $s {
-            fn new(x: $t, y: $t, z: $t) -> Self {
-                Self { x, y, z }
-            }
-        }
-
         impl Tuple3 for $s {
             type Output = $t;
 
@@ -400,32 +420,74 @@ macro_rules! impl_tuple3 {
             }
         }
 
-        impl Tuple for $s {
+        impl BaseTuple for $s {
+            fn ndim() -> usize {
+                3
+            }
+        }
+
+        impl Index<usize> for $s {
+            type Output = $t;
+
+            fn index(&self, index: usize) -> &Self::Output {
+                match index {
+                    0 => &self.x,
+                    1 => &self.y,
+                    2 => &self.z,
+                    _ => panic!(
+                        "index out of bounds: tuple length is {}, but the index is {}.",
+                        <$s>::ndim(),
+                        index
+                    ),
+                }
+            }
+        }
+
+        impl IndexMut<usize> for $s {
+            fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+                match index {
+                    0 => &mut self.x,
+                    1 => &mut self.y,
+                    2 => &mut self.z,
+                    _ => panic!(
+                        "index out of bounds: tuple length is {}, but the index is {}.",
+                        <$s>::ndim(),
+                        index
+                    ),
+                }
+            }
+        }
+
+        impl IntoIterator for $s {
+            type Item = $t;
+            type IntoIter = Tuple3Iter<$t>;
+
+            fn into_iter(self) -> Self::IntoIter {
+                Tuple3Iter {
+                    tup: Box::new(self),
+                    index: 0,
+                }
+            }
+        }
+
+        impl fmt::Display for $s {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "({}, {}, {})", self.x, self.y, self.z)
+            }
+        }
+
+        impl $s {
+            fn new(x: $t, y: $t, z: $t) -> Self {
+                Self { x, y, z }
+            }
+        }
+    };
+}
+
+macro_rules! impl_tuple3_natural {
+    ($s:ty, $t:ty) => {
+        impl Natural for $s {
             type Type = $t;
-
-            fn abs(self) -> Self {
-                Self {
-                    x: self.x.abs(),
-                    y: self.y.abs(),
-                    z: self.z.abs(),
-                }
-            }
-
-            fn ceil(self) -> Self {
-                Self {
-                    x: self.x.ceil(),
-                    y: self.y.ceil(),
-                    z: self.z.ceil(),
-                }
-            }
-
-            fn floor(self) -> Self {
-                Self {
-                    x: self.x.floor(),
-                    y: self.y.floor(),
-                    z: self.z.floor(),
-                }
-            }
 
             fn fma(t0: Self, t1: Self, t2: Self) -> Self {
                 t0 * t1 + t2
@@ -433,10 +495,6 @@ macro_rules! impl_tuple3 {
 
             fn hprod(self) -> Self::Type {
                 self.x * self.y * self.z
-            }
-
-            fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self {
-                (1.0 - t) * t0 + t * t1
             }
 
             fn max(t0: Self, t1: Self) -> Self {
@@ -477,10 +535,6 @@ macro_rules! impl_tuple3 {
 
             fn min_value(self) -> Self::Type {
                 self.x.min(self.y).min(self.z)
-            }
-
-            fn ndim() -> usize {
-                3
             }
 
             fn permute(self, perm: Vec<usize>) -> Self {
@@ -544,38 +598,6 @@ macro_rules! impl_tuple3 {
             }
         }
 
-        impl Index<usize> for $s {
-            type Output = $t;
-
-            fn index(&self, index: usize) -> &Self::Output {
-                match index {
-                    0 => &self.x,
-                    1 => &self.y,
-                    2 => &self.z,
-                    _ => panic!(
-                        "index out of bounds: tuple length is {}, but the index is {}.",
-                        <$s>::ndim(),
-                        index
-                    ),
-                }
-            }
-        }
-
-        impl IndexMut<usize> for $s {
-            fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-                match index {
-                    0 => &mut self.x,
-                    1 => &mut self.y,
-                    2 => &mut self.z,
-                    _ => panic!(
-                        "index out of bounds: tuple length is {}, but the index is {}.",
-                        <$s>::ndim(),
-                        index
-                    ),
-                }
-            }
-        }
-
         impl Mul<Self> for $s {
             type Output = Self;
 
@@ -608,18 +630,6 @@ macro_rules! impl_tuple3 {
             }
         }
 
-        impl Neg for $s {
-            type Output = Self;
-
-            fn neg(self) -> Self::Output {
-                Self {
-                    x: -self.x,
-                    y: -self.y,
-                    z: -self.z,
-                }
-            }
-        }
-
         impl PartialEq for $s {
             fn eq(&self, other: &Self) -> bool {
                 self.x == other.x && self.y == other.y && self.z == other.z
@@ -646,32 +656,59 @@ macro_rules! impl_tuple3 {
             }
         }
 
-        impl IntoIterator for $s {
-            type Item = $t;
-            type IntoIter = Tuple3Iter<$t>;
+    };
+}
 
-            fn into_iter(self) -> Self::IntoIter {
-                Tuple3Iter {
-                    tup: Box::new(self),
-                    index: 0,
-                }
-            }
-        }
-
-        impl fmt::Display for $s {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                write!(f, "({}, {}, {})", self.x, self.y, self.z)
-            }
-        }
-
-        impl Default for $s {
-            fn default() -> Self {
+macro_rules! impl_tuple3_signed {
+    ($s:ty, $t:ty) => {
+        impl Signed for $s {
+            fn abs(self) -> Self {
                 Self {
-                    x: 0.,
-                    y: 0.,
-                    z: 0.,
+                    x: self.x.abs(),
+                    y: self.y.abs(),
+                    z: self.z.abs(),
                 }
             }
+        }
+
+        impl Neg for $s {
+            type Output = Self;
+
+            fn neg(self) -> Self::Output {
+                Self {
+                    x: -self.x,
+                    y: -self.y,
+                    z: -self.z,
+                }
+            }
+        }
+
+    };
+}
+
+macro_rules! impl_tuple3_float {
+    ($s:ty, $t:ty) => {
+        impl Float for $s {
+            fn ceil(self) -> Self {
+                Self {
+                    x: self.x.ceil(),
+                    y: self.y.ceil(),
+                    z: self.z.ceil(),
+                }
+            }
+
+            fn floor(self) -> Self {
+                Self {
+                    x: self.x.floor(),
+                    y: self.y.floor(),
+                    z: self.z.floor(),
+                }
+            }
+
+            fn lerp(t0: Self, t1: Self, t: Self::Type) -> Self {
+                (1.0 - t) * t0 + t * t1
+            }
+
         }
     };
 }
@@ -717,19 +754,173 @@ impl<T> Iterator for Tuple3Iter<T> {
     }
 }
 
-define_tuple2!(Tuple2f32, f32);
-define_tuple2!(Tuple2f64, f64);
-impl_tuple2!(Tuple2f32, f32);
-impl_tuple2!(Tuple2f64, f64);
+////////////////////////////////////////////////////
+// Natural
+////////////////////////////////////////////////////
 
+// Tuple2(u8)
+define_tuple2!(Tuple2u8, u8);
+impl_tuple2_base!(Tuple2u8, u8);
+impl_tuple2_natural!(Tuple2u8, u8);
+
+// Tuple2(u16)
+define_tuple2!(Tuple2u16, u16);
+impl_tuple2_base!(Tuple2u16, u16);
+impl_tuple2_natural!(Tuple2u16, u16);
+
+// Tuple2(u32)
+define_tuple2!(Tuple2u32, u32);
+impl_tuple2_base!(Tuple2u32, u32);
+impl_tuple2_natural!(Tuple2u32, u32);
+
+// Tuple2(u64)
+define_tuple2!(Tuple2u64, u64);
+impl_tuple2_base!(Tuple2u64, u64);
+impl_tuple2_natural!(Tuple2u64, u64);
+
+// Tuple2(u128)
+define_tuple2!(Tuple2u128, u128);
+impl_tuple2_base!(Tuple2u128, u128);
+impl_tuple2_natural!(Tuple2u128, u128);
+
+// Tuple3(u8)
+define_tuple3!(Tuple3u8, u8);
+impl_tuple3_base!(Tuple3u8, u8);
+impl_tuple3_natural!(Tuple3u8, u8);
+
+// Tuple3(u16)
+define_tuple3!(Tuple3u16, u16);
+impl_tuple3_base!(Tuple3u16, u16);
+impl_tuple3_natural!(Tuple3u16, u16);
+
+// Tuple3(u32)
+define_tuple3!(Tuple3u32, u32);
+impl_tuple3_base!(Tuple3u32, u32);
+impl_tuple3_natural!(Tuple3u32, u32);
+
+// Tuple3(u64)
+define_tuple3!(Tuple3u64, u64);
+impl_tuple3_base!(Tuple3u64, u64);
+impl_tuple3_natural!(Tuple3u64, u64);
+
+// Tuple3(u128)
+define_tuple3!(Tuple3u128, u128);
+impl_tuple3_base!(Tuple3u128, u128);
+impl_tuple3_natural!(Tuple3u128, u128);
+
+////////////////////////////////////////////////////
+// Signed
+////////////////////////////////////////////////////
+
+// Tuple2(i8)
+define_tuple2!(Tuple2i8, i8);
+impl_tuple2_base!(Tuple2i8, i8);
+impl_tuple2_natural!(Tuple2i8, i8);
+impl_tuple2_signed!(Tuple2i8, i8);
+
+// Tuple2(i16)
+define_tuple2!(Tuple2i16, i16);
+impl_tuple2_base!(Tuple2i16, i16);
+impl_tuple2_natural!(Tuple2i16, i16);
+impl_tuple2_signed!(Tuple2i16, i16);
+
+// Tuple2(i32)
+define_tuple2!(Tuple2i32, i32);
+impl_tuple2_base!(Tuple2i32, i32);
+impl_tuple2_natural!(Tuple2i32, i32);
+impl_tuple2_signed!(Tuple2i32, i32);
+
+// Tuple2(i64)
+define_tuple2!(Tuple2i64, i64);
+impl_tuple2_base!(Tuple2i64, i64);
+impl_tuple2_natural!(Tuple2i64, i64);
+impl_tuple2_signed!(Tuple2i64, i64);
+
+// Tuple2(i128)
+define_tuple2!(Tuple2i128, i128);
+impl_tuple2_base!(Tuple2i128, i128);
+impl_tuple2_natural!(Tuple2i128, i128);
+impl_tuple2_signed!(Tuple2i128, i128);
+
+// Tuple2(isize)
+define_tuple2!(Tuple2isize, isize);
+impl_tuple2_base!(Tuple2isize, isize);
+impl_tuple2_natural!(Tuple2isize, isize);
+impl_tuple2_signed!(Tuple2isize, isize);
+
+// Tuple3(i8)
+define_tuple3!(Tuple3i8, i8);
+impl_tuple3_base!(Tuple3i8, i8);
+impl_tuple3_natural!(Tuple3i8, i8);
+impl_tuple3_signed!(Tuple3i8, i8);
+
+// Tuple3(i16)
+define_tuple3!(Tuple3i16, i16);
+impl_tuple3_base!(Tuple3i16, i16);
+impl_tuple3_natural!(Tuple3i16, i16);
+impl_tuple3_signed!(Tuple3i16, i16);
+
+// Tuple3(i32)
+define_tuple3!(Tuple3i32, i32);
+impl_tuple3_base!(Tuple3i32, i32);
+impl_tuple3_natural!(Tuple3i32, i32);
+impl_tuple3_signed!(Tuple3i32, i32);
+
+// Tuple3(i64)
+define_tuple3!(Tuple3i64, i64);
+impl_tuple3_base!(Tuple3i64, i64);
+impl_tuple3_natural!(Tuple3i64, i64);
+impl_tuple3_signed!(Tuple3i64, i64);
+
+// Tuple3(i128)
+define_tuple3!(Tuple3i128, i128);
+impl_tuple3_base!(Tuple3i128, i128);
+impl_tuple3_natural!(Tuple3i128, i128);
+impl_tuple3_signed!(Tuple3i128, i128);
+
+// Tuple3(isize)
+define_tuple3!(Tuple3isize, isize);
+impl_tuple3_base!(Tuple3isize, isize);
+impl_tuple3_natural!(Tuple3isize, isize);
+impl_tuple3_signed!(Tuple3isize, isize);
+
+////////////////////////////////////////////////////
+// Float
+////////////////////////////////////////////////////
+
+// Tuple2(f32)
+define_tuple2!(Tuple2f32, f32);
+impl_tuple2_base!(Tuple2f32, f32);
+impl_tuple2_natural!(Tuple2f32, f32);
+impl_tuple2_signed!(Tuple2f32, f32);
+impl_tuple2_float!(Tuple2f32, f32);
+
+// Tuple2(f64)
+define_tuple2!(Tuple2f64, f64);
+impl_tuple2_base!(Tuple2f64, f64);
+impl_tuple2_natural!(Tuple2f64, f64);
+impl_tuple2_signed!(Tuple2f64, f64);
+impl_tuple2_float!(Tuple2f64, f64);
+
+// Tuple3(f32)
 define_tuple3!(Tuple3f32, f32);
+impl_tuple3_base!(Tuple3f32, f32);
+impl_tuple3_natural!(Tuple3f32, f32);
+impl_tuple3_signed!(Tuple3f32, f32);
+impl_tuple3_float!(Tuple3f32, f32);
+
+// Tuple3(f64)
 define_tuple3!(Tuple3f64, f64);
-impl_tuple3!(Tuple3f32, f32);
-impl_tuple3!(Tuple3f64, f64);
+impl_tuple3_base!(Tuple3f64, f64);
+impl_tuple3_natural!(Tuple3f64, f64);
+impl_tuple3_signed!(Tuple3f64, f64);
+impl_tuple3_float!(Tuple3f64, f64);
+
+////////////////////////////////////////////////////
 
 #[cfg(test)]
 mod tuple2_tests {
-    use super::{Tuple, Tuple2f32};
+    use super::{prelude::*, Tuple2f32};
 
     #[test]
     fn abs() {
@@ -826,7 +1017,7 @@ mod tuple2_tests {
 
 #[cfg(test)]
 mod tuple3_tests {
-    use super::{Tuple, Tuple3f64};
+    use super::{prelude::*, Tuple3f64};
 
     #[test]
     fn abs() {
