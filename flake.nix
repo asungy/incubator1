@@ -17,22 +17,6 @@
         name = "kodo";
       in
       {
-        # NOTE: THIS CURRENTLY DOES NOT WORK AFTER PROJECT HAS BEEN REFACTORED.
-        defaultPackage = with pkgs; stdenv.mkDerivation {
-          inherit name;
-          src = self;
-          buildInputs = [
-            pkgs.rust-bin.stable.latest.default
-          ];
-          buildPhase = ''
-            cargo build --release
-          '';
-          installPhase = ''
-            mkdir -p $out/bin
-            cp ./target/release/${name} $out/bin
-          '';
-        };
-
         devShells.default = with pkgs; mkShell {
           buildInputs = [
             cargo-expand
