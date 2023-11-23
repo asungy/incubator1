@@ -15,18 +15,30 @@
           inherit system overlays;
         };
         name = "kodo";
+        frontend-name = "client";
+        backend-name = "server";
+        shell-hook = shell-name: ''
+          PS1="\n\[\033[01;32m\]${name}(${shell-name}) >\[\033[00m\] "
+        '';
       in
       {
-        devShells.default = with pkgs; mkShell {
+        devShells.${frontend-name} = with pkgs; mkShell {
+          buildInputs = [
+            deno
+            nodePackages_latest.typescript-language-server
+          ];
+
+          shellHook = shell-hook frontend-name;
+        };
+
+        devShells.${backend-name} = with pkgs; mkShell {
           buildInputs = [
             cargo-expand
             rust-analyzer
             rust-bin.nightly.latest.default
           ];
 
-          shellHook = ''
-            PS1="\n\[\033[01;32m\]${name}-nix >\[\033[00m\] "
-          '';
+          shellHook = shell-hook backend-name;
         };
       }
     );
