@@ -15,34 +15,30 @@
           inherit system overlays;
         };
         name = "kodo";
+        frontend-name = "client";
+        backend-name = "server";
+        shell-hook = shell-name: ''
+          PS1="\n\[\033[01;32m\]${name}(${shell-name}) >\[\033[00m\] "
+        '';
       in
       {
-        # NOTE: THIS CURRENTLY DOES NOT WORK AFTER PROJECT HAS BEEN REFACTORED.
-        defaultPackage = with pkgs; stdenv.mkDerivation {
-          inherit name;
-          src = self;
+        devShells.${frontend-name} = with pkgs; mkShell {
           buildInputs = [
-            pkgs.rust-bin.stable.latest.default
+            deno
+            nodePackages_latest.typescript-language-server
           ];
-          buildPhase = ''
-            cargo build --release
-          '';
-          installPhase = ''
-            mkdir -p $out/bin
-            cp ./target/release/${name} $out/bin
-          '';
+
+          shellHook = shell-hook frontend-name;
         };
 
-        devShells.default = with pkgs; mkShell {
+        devShells.${backend-name} = with pkgs; mkShell {
           buildInputs = [
             cargo-expand
             rust-analyzer
             rust-bin.nightly.latest.default
           ];
 
-          shellHook = ''
-            PS1="\n\[\033[01;32m\]${name}-nix >\[\033[00m\] "
-          '';
+          shellHook = shell-hook backend-name;
         };
       }
     );
