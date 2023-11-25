@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "I don't know what this is yet.";
 
   inputs = {
     nixpkgs.url      = "github:nixos/nixpkgs/nixos-unstable";
@@ -39,6 +39,16 @@
           ];
 
           shellHook = shell-hook backend-name;
+        };
+
+        devShells.wasm = with pkgs; mkShell {
+          buildInputs = [
+            wabt
+            wasm3
+            nodePackages_latest.http-server
+          ];
+
+          shellHook = shell-hook "wasm";
         };
       }
     );
