@@ -43,11 +43,16 @@
 
         devShells.wasm = with pkgs; mkShell {
           buildInputs = [
+            (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
+              targets = [ "wasm32-unknown-unknown" ];
+            }))
+
             cargo-generate
             nodePackages_latest.http-server
             nodePackages_latest.npm
             wabt
             wasm-pack
+
             # wasm3
           ];
 
