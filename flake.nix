@@ -43,9 +43,12 @@
 
         devShells.wasm = with pkgs; mkShell {
           buildInputs = [
-            wabt
-            wasm3
+            cargo-generate
             nodePackages_latest.http-server
+            nodePackages_latest.npm
+            wabt
+            wasm-pack
+            # wasm3
           ];
 
           shellHook = shell-hook "wasm";
