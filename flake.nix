@@ -31,7 +31,6 @@
             deno
             wasm-pack
             rust-analyzer
-            rustup
           ];
 
           shellHook = shell-hook frontend-name;
