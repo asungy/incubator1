@@ -24,8 +24,14 @@
       {
         devShells.${frontend-name} = with pkgs; mkShell {
           buildInputs = [
+            (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
+              targets = [ "wasm32-unknown-unknown" ];
+            }))
+
             deno
-            nodePackages_latest.typescript-language-server
+            wasm-pack
+            rust-analyzer
+            rustup
           ];
 
           shellHook = shell-hook frontend-name;
@@ -39,24 +45,6 @@
           ];
 
           shellHook = shell-hook backend-name;
-        };
-
-        devShells.wasm = with pkgs; mkShell {
-          buildInputs = [
-            (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
-              targets = [ "wasm32-unknown-unknown" ];
-            }))
-
-            cargo-generate
-            nodePackages_latest.http-server
-            nodePackages_latest.npm
-            wabt
-            wasm-pack
-
-            # wasm3
-          ];
-
-          shellHook = shell-hook "wasm";
         };
       }
     );
