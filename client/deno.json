@@ -6,7 +6,7 @@
     "build": "deno run -A dev.ts build",
     "preview": "deno run -A main.ts",
     "update": "deno run -A -r https://fresh.deno.dev/update .",
-    "wasmbuild": "wasm-pack build --target deno"
+    "wasmbuild": "deno run -A https://deno.land/x/wasmbuild@0.15.2/main.ts"
   },
   "lint": {
     "rules": {
@@ -20,7 +20,7 @@
     "**/_fresh/*"
   ],
   "imports": {
-    "@wasm/": "./pkg/",
+    "@/": "./",
     "$fresh/": "https://deno.land/x/fresh@1.5.4/",
     "preact": "https://esm.sh/preact@10.18.1",
     "preact/": "https://esm.sh/preact@10.18.1/",
