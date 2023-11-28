@@ -1,6 +1,6 @@
 import type { Signal } from "@preact/signals";
 import { Button } from "../components/Button.tsx";
-import { greet } from "@wasm/kodo_client.js";
+import { greet } from "@/lib/rs_lib.generated.js";
 
 interface CounterProps {
   count: Signal<number>;

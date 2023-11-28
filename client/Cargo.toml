@@ -1,11 +1,5 @@
 [workspace]
-resolver = "2"
 members = [
   "rs_lib",
 ]
-
-[profile.release]
-codegen-units = 1
-incremental = true
-lto = true
-opt-level = "z"
+edition = "2021"
