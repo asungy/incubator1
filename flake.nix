@@ -29,8 +29,9 @@
             }))
 
             deno
-            wasm-pack
+            nodePackages_latest.http-server
             rust-analyzer
+            wasm-pack
           ];
 
           shellHook = shell-hook frontend-name;
