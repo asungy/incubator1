@@ -1,5 +1,5 @@
 [package]
-name = "julia_set"
+name = "canvas"
 version = "0.1.0"
 authors = ["The wasm-bindgen Developers"]
 edition = "2018"
@@ -9,11 +9,15 @@ rust-version = "1.57"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasm-bindgen = "0.2.89"
+wasm-bindgen = "0.2"
 
 [dependencies.web-sys]
-version = "0.3.4"
+version = "0.3"
 features = [
-  'ImageData',
-  'CanvasRenderingContext2d',
+    "CanvasRenderingContext2d",
+    "Document",
+    "Element",
+    "HtmlCanvasElement",
+    "ImageData",
+    "Window",
 ]
