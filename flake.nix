@@ -28,8 +28,7 @@
               targets = [ "wasm32-unknown-unknown" ];
             }))
 
-            deno
-            nodePackages_latest.http-server
+            nodePackages_latest.npm
             rust-analyzer
             wasm-pack
           ];
