@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url      = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url  = "github:numtide/flake-utils";
-		nixvim.url       = "github:nix-community/nixvim";
+    nixvim.url       = "github:nix-community/nixvim";
   };
 
   outputs = { self, nixpkgs, flake-utils, nixvim, } @ inputs:
@@ -12,10 +12,10 @@
       let
         pkgs = import nixpkgs { inherit system; };
 
-				nvim = nixvim.legacyPackages.${system}.makeNixvimWithModule {
-					inherit pkgs;
-					module = import ./nvim;
-				};
+        nvim = nixvim.legacyPackages.${system}.makeNixvimWithModule {
+          inherit pkgs;
+          module = import ./nvim;
+        };
 
         name = "kodo";
         shell-hook = shell-name: ''
@@ -25,7 +25,7 @@
       {
         devShells.default = pkgs.mkShell {
           buildInputs = [
-						nvim
+            nvim
           ];
 
           shellHook = shell-hook "default";
