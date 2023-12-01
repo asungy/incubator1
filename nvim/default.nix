@@ -13,6 +13,7 @@
 
     plugins = {}
       // import ./plugins/nvim-tree.nix
+      // import ./plugins/lualine.nix
       ;
   };
 }
