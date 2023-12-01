@@ -1,8 +1,2 @@
-target/
-# Cargo lock files should be ignored for libraries.
-# Reference: https://doc.rust-lang.org/cargo/faq.html#why-do-binaries-have-cargolock-in-version-control-but-not-libraries
-/Cargo.lock
-/core/macros/**/Cargo.lock
-
 # Nix flake artifact
 result
